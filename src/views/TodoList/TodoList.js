@@ -5,45 +5,35 @@ import styles from "./TodoList.module.scss";
 function TodoList() {
   return (
     <div className={styles.taskContent}>
-      {" "}
       <div className={styles.taskHeader}>
-        {" "}
-        <div className={styles.taskHeader__title}>Задачи</div>{" "}
+        <div className={styles.taskHeader__title}>Задачи</div>
         <div className={styles.taskHeader__options}>
-          {" "}
-          <span>&bull; &bull; &bull; </span>{" "}
-        </div>{" "}
-      </div>{" "}
+          <span>&bull;&bull;&bull;</span>
+        </div>
+      </div>
       <div className={styles.taskForm}>
-        {" "}
         <div className={styles.taskForm__textOverflow}>
-          {" "}
           <textarea
             type="text"
             placeholder="Enter a title for this card..."
             className={styles.taskForm__text}
-          />{" "}
-        </div>{" "}
+          />
+        </div>
         <div className={styles.taskForm__actions}>
-          {" "}
-          <button className={styles.taskForm__add}>Add card</button>{" "}
+          <button className={styles.taskForm__add}>Add card</button>
           <div className={styles.taskForm__delete}>
-            {" "}
-            <span></span>{" "}
-          </div>{" "}
+            <span></span>
+          </div>
           <div className={styles.taskForm__options}>
-            {" "}
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              {" "}
-              <path d="M9 3L5 6.99h3V14h2V6.99h3L9 3zm7 14.01V10h-2v7.01h-3L15 21l4-3.99h-3z" />{" "}
-              <path d="M0 0h24v24H0z" fill="none" />{" "}
-            </svg>{" "}
-          </div>{" "}
-        </div>{" "}
-      </div>{" "}
+              <path d="M9 3L5 6.99h3V14h2V6.99h3L9 3zm7 14.01V10h-2v7.01h-3L15 21l4-3.99h-3z" />
+              <path d="M0 0h24v24H0z" fill="none" />
+            </svg>
+          </div>
+        </div>
+      </div>
       {/* <Loader /> */}
       <div className={styles.taskList}>
-        {" "}
         {/* <TaskItem
         v-for="(task, index) in tasks"
         key="task.key"
