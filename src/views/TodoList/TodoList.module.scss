@@ -31,6 +31,9 @@
       width: 30px;
       padding: 6px;
       border-radius: 3px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
       &:hover {
         background-color: rgba(9, 30, 66, 0.08);
@@ -131,8 +134,8 @@
       position: relative;
       cursor: pointer;
 
-      &:hover > span,
-      &:hover > span:before {
+      &:hover>span,
+      &:hover>span:before {
         background: #000;
       }
 
