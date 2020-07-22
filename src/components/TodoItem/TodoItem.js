@@ -13,17 +13,7 @@ class TodoItem extends Component {
     this.setState({
       is_show_menu: !this.state.is_show_menu,
     });
-    // document.addEventListener("click", this.close);
   };
-
-  // close (e) {
-  //   if (!this.$el.contains(e.target)) {
-  //     this.setState({
-  //       is_show_menu: false,
-  //     });
-  //     document.removeEventListener("click", this.close);
-  //   }
-  // }
 
   render() {
     let cls = [styles.taskList__item];
