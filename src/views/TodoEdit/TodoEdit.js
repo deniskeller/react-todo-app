@@ -1,22 +1,33 @@
-import React from "react";
+import React, { Component } from "react";
 import styles from "./TodoEdit.module.scss";
 
-function TodoEdit() {
-  return (
-    <div className={styles.taskEdit}>
-      <div className={styles.taskEdit__textOverflow}>
-        <textarea
-          className={styles.taskEdit__text}
-          placeholder="Enter a title for this card..."
-        ></textarea>
-      </div>
+class TodoEdit extends Component {
+  goBack = () => {
+    this.props.history.push("/");
+  };
 
-      <div className={styles.taskEdit__buttons}>
-        <button className={styles.btnSave}>Save</button>
-        <div className={styles.btnBack}>Back</div>
+  render() {
+    console.log(this.props);
+    return (
+      <div className={styles.taskEdit}>
+        <div className={styles.taskEdit__textOverflow}>
+          <textarea
+            className={styles.taskEdit__text}
+            placeholder="Enter a title for this card..."
+          ></textarea>
+          <p>{this.props.match.params.text}</p>
+          <p>{this.props.match.params.id}</p>
+        </div>
+
+        <div className={styles.taskEdit__buttons}>
+          <button className={styles.btnSave}>Save</button>
+          <div className={styles.btnBack} onClick={this.goBack}>
+            Back
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default TodoEdit;

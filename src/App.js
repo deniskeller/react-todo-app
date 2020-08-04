@@ -1,13 +1,17 @@
 import React from "react";
-// import TodoEdit from "./views/TodoEdit/TodoEdit";
+import TodoEdit from "./views/TodoEdit/TodoEdit";
 import TodoList from "./views/TodoList/TodoList";
+import Layout from "./hoc/layout/Layout";
+import { Route, Switch } from "react-router-dom";
 
 function App() {
   return (
-    <div className="App">
-      {/* <TodoEdit /> */}
-      <TodoList />
-    </div>
+    <Layout>
+      <Switch>
+        <Route path="/" exact component={TodoList} />
+        <Route path="/TodoEdit/:id" component={TodoEdit} />
+      </Switch>
+    </Layout>
   );
 }
 

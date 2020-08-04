@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styles from "./TodoItem.module.scss";
+import { NavLink, withRouter } from "react-router-dom";
 
 class TodoItem extends Component {
   state = {
@@ -16,6 +17,8 @@ class TodoItem extends Component {
   };
 
   render() {
+    console.log(this.props);
+
     let cls = [styles.taskList__item];
     if (this.state.is_show_menu) {
       cls.push(styles.active);
@@ -46,7 +49,12 @@ class TodoItem extends Component {
         {this.state.is_show_menu ? (
           <div className={styles.taskList__item__menu} id="menu">
             <div className={styles.taskList__item__menuItem}>Выполнено</div>
-            <div className={styles.taskList__item__menuItem}>Редактировать</div>
+            <NavLink
+              to={"/TodoEdit/" + this.props.id}
+              className={styles.taskList__item__menuItem}
+            >
+              Редактировать
+            </NavLink>
             <div className={styles.taskList__item__menuItem}>Удалить</div>
           </div>
         ) : null}
@@ -55,4 +63,4 @@ class TodoItem extends Component {
   }
 }
 
-export default TodoItem;
+export default withRouter(TodoItem);
