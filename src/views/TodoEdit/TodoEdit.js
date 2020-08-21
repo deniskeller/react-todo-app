@@ -15,8 +15,7 @@ class TodoEdit extends Component {
             className={styles.taskEdit__text}
             placeholder="Enter a title for this card..."
           ></textarea>
-          <p>{this.props.match.params.text}</p>
-          <p>{this.props.match.params.id}</p>
+          <p>{this.props.index}</p>
         </div>
 
         <div className={styles.taskEdit__buttons}>

@@ -8,17 +8,20 @@ class TodoItem extends Component {
   };
 
   toggleMenuHandler = (event, index) => {
-    console.log("event: ", event.target);
-    console.log("index: ", index);
+    // console.log("event: ", event.target);
+    // console.log("index: ", index);
 
     this.setState({
       is_show_menu: !this.state.is_show_menu,
     });
   };
 
-  render() {
-    console.log(this.props);
+  deleteItem() {
+    console.log(this.props.id);
+    this.props.onDeleteItem(this.props.id);
+  }
 
+  render() {
     let cls = [styles.taskList__item];
     if (this.state.is_show_menu) {
       cls.push(styles.active);
@@ -50,12 +53,17 @@ class TodoItem extends Component {
           <div className={styles.taskList__item__menu} id="menu">
             <div className={styles.taskList__item__menuItem}>Выполнено</div>
             <NavLink
-              to={"/TodoEdit/" + this.props.id}
+              to={"/TodoEdit/" + (this.props.index + 1)}
               className={styles.taskList__item__menuItem}
             >
               Редактировать
             </NavLink>
-            <div className={styles.taskList__item__menuItem}>Удалить</div>
+            <div
+              onClick={this.deleteItem.bind(this)}
+              className={styles.taskList__item__menuItem}
+            >
+              Удалить
+            </div>
           </div>
         ) : null}
       </div>

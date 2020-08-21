@@ -9,7 +9,12 @@ function App() {
     <Layout>
       <Switch>
         <Route path="/" exact component={TodoList} />
-        <Route path="/TodoEdit/:id" component={TodoEdit} />
+        <Route path="/TodoEdit/:index" component={TodoEdit} />
+        <Route
+          render={() => (
+            <h1 style={{ color: "red", textAlign: "center" }}>404 not found</h1>
+          )}
+        />
       </Switch>
     </Layout>
   );

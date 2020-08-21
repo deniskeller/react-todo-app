@@ -2,15 +2,79 @@ import React, { Component } from "react";
 import styles from "./TodoList.module.scss";
 // import Loader from "../../components/Loader/Loader";
 import TodoItem from "../../components/TodoItem/TodoItem";
+import Axios from "axios";
 
 class TodoList extends Component {
   state = {
-    todos: [
-      { id: 1, text: "111" },
-      { id: 2, text: "222" },
-      { id: 3, text: "333" },
-    ],
+    todos: [],
+    text: "",
   };
+
+  createTodo = async () => {
+    const todos = this.state.todos.concat();
+    const index = todos.length + 1;
+
+    const newTodo = {
+      id: index,
+      text: this.state.text,
+      done: false,
+    };
+    console.log(newTodo);
+    todos.push(newTodo);
+    this.setState({
+      todos,
+      text: "",
+    });
+    console.log(todos);
+
+    try {
+      await Axios.post(
+        "https://react-todo-app-e42cf.firebaseio.com/todos.json",
+        todos
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  changeHandler = (value) => {
+    this.setState({
+      text: value.trim(),
+    });
+  };
+
+  onDeleteItem(itemId) {
+    console.log(this.props.id);
+    var updatedTodos = this.state.todos.filter((item) => {
+      return item.id !== itemId;
+    });
+
+    this.setState({
+      todos: [].concat(updatedTodos),
+    });
+  }
+
+  async componentDidMount() {
+    try {
+      const response = await Axios.get(
+        "https://react-todo-app-e42cf.firebaseio.com/todos.json"
+      );
+      console.log(response.data);
+      const todos = [];
+      Object.keys(response.data).forEach((key, index, text, done) => {
+        todos.push({
+          done,
+          id: key,
+          text,
+        });
+      });
+      this.setState({
+        todos,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   render() {
     return (
@@ -27,10 +91,18 @@ class TodoList extends Component {
               type="text"
               placeholder="Enter a title for this card..."
               className={styles.taskForm__text}
+              value={this.state.text}
+              onChange={(event) => this.changeHandler(event.target.value)}
             />
           </div>
           <div className={styles.taskForm__actions}>
-            <button className={styles.taskForm__add}>Add card</button>
+            <button
+              className={styles.taskForm__add}
+              disabled={!this.state.text}
+              onClick={this.createTodo.bind(this)}
+            >
+              Add card
+            </button>
             <div className={styles.taskForm__delete}>
               <span></span>
             </div>
@@ -53,6 +125,7 @@ class TodoList extends Component {
                   text={todo.text}
                   id={todo.id}
                   index={index}
+                  onDeleteItem={this.props.onDeleteItem}
                 />
               );
             })}
