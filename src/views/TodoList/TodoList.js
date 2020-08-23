@@ -1,22 +1,25 @@
 import React, { Component } from "react";
 import styles from "./TodoList.module.scss";
-// import Loader from "../../components/Loader/Loader";
+import Loader from "../../components/Loader/Loader";
 import TodoItem from "../../components/TodoItem/TodoItem";
-import Axios from "axios";
+import Axios from "../../axios/axios";
+import { connect } from "react-redux";
+import { fetchTodos } from "../../store/actions/todo";
 
 class TodoList extends Component {
-  state = {
-    todos: [],
-    text: "",
-  };
+  // state = {
+  //   todos: [],
+  //   text: "",
+  //   loading: true,
+  // };
 
   createTodo = async () => {
-    const todos = this.state.todos.concat();
+    const todos = this.props.todos.concat();
     const index = todos.length + 1;
 
     const newTodo = {
       id: index,
-      text: this.state.text,
+      text: this.props.text,
       done: false,
     };
     console.log(newTodo);
@@ -28,10 +31,7 @@ class TodoList extends Component {
     console.log(todos);
 
     try {
-      await Axios.post(
-        "https://react-todo-app-e42cf.firebaseio.com/todos.json",
-        todos
-      );
+      await Axios.post("/todos.json", todos);
     } catch (error) {
       console.log(error);
     }
@@ -45,7 +45,7 @@ class TodoList extends Component {
 
   onDeleteItem(itemId) {
     console.log(this.props.id);
-    var updatedTodos = this.state.todos.filter((item) => {
+    var updatedTodos = this.props.todos.filter((item) => {
       return item.id !== itemId;
     });
 
@@ -54,26 +54,26 @@ class TodoList extends Component {
     });
   }
 
-  async componentDidMount() {
-    try {
-      const response = await Axios.get(
-        "https://react-todo-app-e42cf.firebaseio.com/todos.json"
-      );
-      console.log(response.data);
-      const todos = [];
-      Object.keys(response.data).forEach((key, index, text, done) => {
-        todos.push({
-          done,
-          id: key,
-          text,
-        });
-      });
-      this.setState({
-        todos,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+  componentDidMount() {
+    this.props.fetchTodos();
+    // try {
+    //   const response = await Axios.get("/todos.json");
+    //   console.log(response.data);
+    //   const todos = [];
+    //   Object.keys(response.data).forEach((key, index, text, done) => {
+    //     todos.push({
+    //       done,
+    //       id: key,
+    //       text,
+    //     });
+    //   });
+    //   this.setState({
+    //     todos,
+    //     loading: false,
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    // }
   }
 
   render() {
@@ -91,14 +91,14 @@ class TodoList extends Component {
               type="text"
               placeholder="Enter a title for this card..."
               className={styles.taskForm__text}
-              value={this.state.text}
+              value={this.props.text}
               onChange={(event) => this.changeHandler(event.target.value)}
             />
           </div>
           <div className={styles.taskForm__actions}>
             <button
               className={styles.taskForm__add}
-              disabled={!this.state.text}
+              disabled={!this.props.text}
               onClick={this.createTodo.bind(this)}
             >
               Add card
@@ -114,11 +114,12 @@ class TodoList extends Component {
             </div>
           </div>
         </div>
-        {/* <Loader /> */}
 
-        {this.state.todos.length > 0 ? (
+        {this.props.loading && this.props.todos.length !== 0 ? (
+          <Loader />
+        ) : this.props.todos.length > 0 ? (
           <div className={styles.taskList}>
-            {this.state.todos.map((todo, index) => {
+            {this.props.todos.map((todo, index) => {
               return (
                 <TodoItem
                   key={index}
@@ -157,4 +158,19 @@ class TodoList extends Component {
   }
 }
 
-export default TodoList;
+function mapStateToProps(state) {
+  console.log(state.todo);
+  return {
+    todos: state.todo.todos,
+    text: state.todo.text,
+    loading: state.todo.loading,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchTodos: () => dispatch(fetchTodos()),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoList);
