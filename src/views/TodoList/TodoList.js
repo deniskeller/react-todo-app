@@ -2,39 +2,31 @@ import React, { Component } from "react";
 import styles from "./TodoList.module.scss";
 import Loader from "../../components/Loader/Loader";
 import TodoItem from "../../components/TodoItem/TodoItem";
-import Axios from "../../axios/axios";
+// import Axios from "../../axios/axios";
 import { connect } from "react-redux";
-import { fetchTodos } from "../../store/actions/todo";
+import {
+  fetchTodos,
+  createTodo,
+  finishCreateTodo,
+} from "../../store/actions/todo";
 
 class TodoList extends Component {
-  // state = {
-  //   todos: [],
-  //   text: "",
-  //   loading: true,
-  // };
+  state = {
+    text: "",
+  };
 
-  createTodo = async () => {
-    const todos = this.props.todos.concat();
-    const index = todos.length + 1;
-
-    const newTodo = {
-      id: index,
-      text: this.props.text,
+  createTodo = () => {
+    const todo = {
+      id: this.props.todos.length + 1,
+      text: this.state.text,
       done: false,
     };
-    console.log(newTodo);
-    todos.push(newTodo);
+    this.props.createTodo(todo);
     this.setState({
-      todos,
       text: "",
     });
-    console.log(todos);
 
-    try {
-      await Axios.post("/todos.json", todos);
-    } catch (error) {
-      console.log(error);
-    }
+    this.props.finishCreateTodo(todo);
   };
 
   changeHandler = (value) => {
@@ -43,37 +35,19 @@ class TodoList extends Component {
     });
   };
 
-  onDeleteItem(itemId) {
-    console.log(this.props.id);
-    var updatedTodos = this.props.todos.filter((item) => {
-      return item.id !== itemId;
-    });
+  // onDeleteItem(itemId) {
+  //   console.log(this.props.id);
+  //   var updatedTodos = this.props.todos.filter((item) => {
+  //     return item.id !== itemId;
+  //   });
 
-    this.setState({
-      todos: [].concat(updatedTodos),
-    });
-  }
+  //   this.setState({
+  //     todos: [].concat(updatedTodos),
+  //   });
+  // }
 
   componentDidMount() {
     this.props.fetchTodos();
-    // try {
-    //   const response = await Axios.get("/todos.json");
-    //   console.log(response.data);
-    //   const todos = [];
-    //   Object.keys(response.data).forEach((key, index, text, done) => {
-    //     todos.push({
-    //       done,
-    //       id: key,
-    //       text,
-    //     });
-    //   });
-    //   this.setState({
-    //     todos,
-    //     loading: false,
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
   }
 
   render() {
@@ -91,14 +65,14 @@ class TodoList extends Component {
               type="text"
               placeholder="Enter a title for this card..."
               className={styles.taskForm__text}
-              value={this.props.text}
+              value={this.state.text}
               onChange={(event) => this.changeHandler(event.target.value)}
             />
           </div>
           <div className={styles.taskForm__actions}>
             <button
               className={styles.taskForm__add}
-              disabled={!this.props.text}
+              disabled={!this.state.text}
               onClick={this.createTodo.bind(this)}
             >
               Add card
@@ -159,10 +133,9 @@ class TodoList extends Component {
 }
 
 function mapStateToProps(state) {
-  console.log(state.todo);
   return {
     todos: state.todo.todos,
-    text: state.todo.text,
+    todo: state.todo.todo,
     loading: state.todo.loading,
   };
 }
@@ -170,6 +143,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     fetchTodos: () => dispatch(fetchTodos()),
+    createTodo: (item) => dispatch(createTodo(item)),
+    finishCreateTodo: (todo) => dispatch(finishCreateTodo(todo)),
   };
 }
 
