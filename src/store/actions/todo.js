@@ -5,6 +5,7 @@ import {
   FETCH_TODOS_ERROR,
   CREATE_TODO,
   RESET_CREATE_TODO,
+  REMOVE_TODO,
 } from "./actionTypes";
 
 // render todos
@@ -13,9 +14,7 @@ export function fetchTodos() {
     dispatch(fetchTodosStart());
     try {
       const response = await Axios.get("/todos.json");
-      console.log(response.data);
       const todos = [];
-
       Object.values(response.data).forEach((item) => {
         todos.push(item);
       });
@@ -65,5 +64,33 @@ export function resetTodos() {
   };
 }
 // delete todo
+export function fetchRemoveTodo(id) {
+  return async (dispatch) => {
+    dispatch(fetchTodosStart());
+    try {
+      const response = await Axios.get("/todos.json");
+      console.log("response: ", response.data);
+
+      const item = Object.entries(response.data).filter((item) => {
+        if (item[1].id === id) {
+          return item;
+        }
+      });
+      const todoData = item[0][0];
+      await Axios.delete("/todos/" + todoData + ".json");
+    } catch (error) {
+      console.log("error: ", error);
+
+      // dispatch(fetchTodosError(error));
+    }
+  };
+}
+
+export function removeTodo(id) {
+  return {
+    type: REMOVE_TODO,
+    id,
+  };
+}
 // completed todo
 // edit todo

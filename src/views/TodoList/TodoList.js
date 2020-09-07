@@ -8,6 +8,8 @@ import {
   fetchTodos,
   createTodo,
   finishCreateTodo,
+  // removeTodo,
+  fetchRemoveTodo,
 } from "../../store/actions/todo";
 
 class TodoList extends Component {
@@ -35,16 +37,18 @@ class TodoList extends Component {
     });
   };
 
-  // onDeleteItem(itemId) {
-  //   console.log(this.props.id);
-  //   var updatedTodos = this.props.todos.filter((item) => {
-  //     return item.id !== itemId;
-  //   });
+  onDeleteItem = (id) => {
+    console.log(id);
+    // var updatedTodos = this.props.todos.filter((item) => {
+    //   return item.id !== itemId;
+    // });
 
-  //   this.setState({
-  //     todos: [].concat(updatedTodos),
-  //   });
-  // }
+    // this.setState({
+    //   todos: [].concat(updatedTodos),
+    // });
+    this.props.fetchRemoveTodo(id);
+    this.props.fetchTodos();
+  };
 
   componentDidMount() {
     this.props.fetchTodos();
@@ -100,7 +104,8 @@ class TodoList extends Component {
                   text={todo.text}
                   id={todo.id}
                   index={index}
-                  onDeleteItem={this.props.onDeleteItem}
+                  // onDeleteItem={this.props.onDeleteItem}
+                  onDeleteItem={this.onDeleteItem}
                 />
               );
             })}
@@ -145,6 +150,7 @@ function mapDispatchToProps(dispatch) {
     fetchTodos: () => dispatch(fetchTodos()),
     createTodo: (item) => dispatch(createTodo(item)),
     finishCreateTodo: (todo) => dispatch(finishCreateTodo(todo)),
+    fetchRemoveTodo: (id) => dispatch(fetchRemoveTodo(id)),
   };
 }
 

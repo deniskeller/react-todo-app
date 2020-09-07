@@ -7,5 +7,6 @@ export const CREATE_TODO = "CREATE_TODO";
 export const FINISH_CREATE_TODO = "FINISH_CREATE_TODO";
 export const RESET_CREATE_TODO = "RESET_CREATE_TODO";
 // delete todo
+export const REMOVE_TODO = "REMOVE_TODO";
 // completed todo
 // edit todo

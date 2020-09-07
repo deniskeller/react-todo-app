@@ -4,6 +4,7 @@ import {
   FETCH_TODOS_ERROR,
   CREATE_TODO,
   RESET_CREATE_TODO,
+  REMOVE_TODO,
 } from "../actions/actionTypes";
 
 const initialState = {
@@ -45,6 +46,13 @@ export default function todoReducer(state = initialState, action) {
         todo: {},
       };
     // delete todo
+    case REMOVE_TODO:
+      return (state.todos = state.todos.filter((task) => {
+        if (task.id !== action.id) {
+          return task;
+        }
+        console.log(state.todos);
+      }));
     // completed todo
     // edit todo
     default:
