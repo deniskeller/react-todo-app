@@ -1,47 +1,55 @@
-import Axios from "../../axios/axios";
+import Axios from '../../axios/axios';
 import {
-  FETCH_TODOS_START,
-  FETCH_TODOS_SUCCESS,
-  FETCH_TODOS_ERROR,
+  RENDER_TODOS,
   CREATE_TODO,
-  RESET_CREATE_TODO,
   REMOVE_TODO,
-} from "./actionTypes";
+  EDIT_TODO,
+  TOGGLE_LOADER,
+} from './actionTypes';
 
 // render todos
 export function fetchTodos() {
   return async (dispatch) => {
-    dispatch(fetchTodosStart());
     try {
-      const response = await Axios.get("/todos.json");
-      const todos = [];
-      Object.values(response.data).forEach((item) => {
-        todos.push(item);
+      dispatch(setLoading(true));
+      await Axios.get('/todos.json').then((response) => {
+        dispatch(setLoading(false));
+        const data = response.data;
+        const todos = Object.keys(data).map((item) => {
+          return { ...data[item], id: item };
+        });
+        dispatch(fetchTodosStart(todos));
       });
-      console.log("todos: ", todos);
 
-      dispatch(fetchTodosSuccess(todos));
+      // if (data.length === 0) {
+      //   dispatch(setLoading(false));
+      // }
+      // console.log('todos.length: ', todos.length);
+
+      // return function (pageNumber) {
+      //   let tasks = state.tasks.slice(0),
+      //     index = 1,
+      //     startIndex = pageNumber * 10,
+      //     endIndex = startIndex + 10;
+
+      //   tasks.forEach((task) => {
+      //     task.key = index;
+      //     index++;
+      //   });
+
+      //   tasks = tasks.slice(startIndex, endIndex);
+      //   return tasks;
+      // }
     } catch (error) {
-      dispatch(fetchTodosError(error));
+      console.log('error: ', error);
     }
   };
 }
 
-export function fetchTodosStart() {
+export function fetchTodosStart(todos) {
   return {
-    type: FETCH_TODOS_START,
-  };
-}
-export function fetchTodosSuccess(todos) {
-  return {
-    type: FETCH_TODOS_SUCCESS,
+    type: RENDER_TODOS,
     todos,
-  };
-}
-export function fetchTodosError(error) {
-  return {
-    type: FETCH_TODOS_ERROR,
-    error,
   };
 }
 // create todo
@@ -51,46 +59,34 @@ export function createTodo(item) {
     item,
   };
 }
-export function finishCreateTodo(todo) {
-  return async (dispatch) => {
-    await Axios.post("/todos.json", todo);
-    dispatch(resetTodos());
+
+export function setLoading(loading) {
+  return {
+    type: TOGGLE_LOADER,
+    loading,
   };
 }
 
-export function resetTodos() {
-  return {
-    type: RESET_CREATE_TODO,
+export function finishCreateTodo(todo) {
+  return async (dispatch) => {
+    await Axios.post('/todos.json', todo);
   };
 }
 // delete todo
 export function fetchRemoveTodo(id) {
   return async (dispatch) => {
-    dispatch(fetchTodosStart());
     try {
-      const response = await Axios.get("/todos.json");
-      console.log("response: ", response.data);
-
-      const item = Object.entries(response.data).filter((item) => {
-        if (item[1].id === id) {
-          return item;
-        }
-      });
-      const todoData = item[0][0];
-      await Axios.delete("/todos/" + todoData + ".json");
+      await Axios.delete('/todos/' + id + '.json');
     } catch (error) {
-      console.log("error: ", error);
-
-      // dispatch(fetchTodosError(error));
+      console.log('error: ', error);
     }
-  };
-}
-
-export function removeTodo(id) {
-  return {
-    type: REMOVE_TODO,
-    id,
   };
 }
 // completed todo
 // edit todo
+export function editTodo(id) {
+  return {
+    type: EDIT_TODO,
+    id,
+  };
+}

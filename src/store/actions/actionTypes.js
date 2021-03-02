@@ -1,12 +1,12 @@
 // render todos
-export const FETCH_TODOS_START = "FETCH_TODOS_START";
-export const FETCH_TODOS_SUCCESS = "FETCH_TODOS_SUCCESS";
-export const FETCH_TODOS_ERROR = "FETCH_TODOS_ERROR";
+export const RENDER_TODOS = 'RENDER_TODOS';
+//loader
+export const TOGGLE_LOADER = 'TOGGLE_LOADER';
 // create todo
-export const CREATE_TODO = "CREATE_TODO";
-export const FINISH_CREATE_TODO = "FINISH_CREATE_TODO";
-export const RESET_CREATE_TODO = "RESET_CREATE_TODO";
+export const CREATE_TODO = 'CREATE_TODO';
 // delete todo
-export const REMOVE_TODO = "REMOVE_TODO";
+export const REMOVE_TODO = 'REMOVE_TODO';
 // completed todo
+export const COMPLETED_TODO = 'COMPLETED_TODO';
 // edit todo
+export const EDIT_TODO = 'EDIT_TODO';

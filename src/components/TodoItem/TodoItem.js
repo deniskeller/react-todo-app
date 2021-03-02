@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import styles from "./TodoItem.module.scss";
-import { NavLink, withRouter } from "react-router-dom";
+import React, { Component } from 'react';
+import styles from './TodoItem.module.scss';
+import { withRouter } from 'react-router-dom';
 
 class TodoItem extends Component {
   state = {
@@ -20,6 +20,14 @@ class TodoItem extends Component {
     this.props.onDeleteItem(this.props.id);
   }
 
+  editItem() {
+    this.props.history.push({
+      pathname: '/TodoEdit/' + (this.props.index + 1),
+      params: { todo: this.props.todo },
+    });
+    console.log('this.props.history: ', this.props.history);
+  }
+
   render() {
     let cls = [styles.taskList__item];
     if (this.state.is_show_menu) {
@@ -27,7 +35,7 @@ class TodoItem extends Component {
     }
 
     return (
-      <div className={cls.join(" ")}>
+      <div className={cls.join(' ')}>
         <span>
           {this.props.index + 1}) {this.props.text}
         </span>
@@ -51,12 +59,13 @@ class TodoItem extends Component {
         {this.state.is_show_menu ? (
           <div className={styles.taskList__item__menu} id="menu">
             <div className={styles.taskList__item__menuItem}>Выполнено</div>
-            <NavLink
-              to={"/TodoEdit/" + (this.props.index + 1)}
+
+            <div
               className={styles.taskList__item__menuItem}
+              onClick={() => this.editItem()}
             >
               Редактировать
-            </NavLink>
+            </div>
             <div
               onClick={() => this.deleteItem()}
               className={styles.taskList__item__menuItem}

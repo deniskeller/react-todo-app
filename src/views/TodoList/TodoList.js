@@ -1,20 +1,20 @@
-import React, { Component } from "react";
-import styles from "./TodoList.module.scss";
-import Loader from "../../components/Loader/Loader";
-import TodoItem from "../../components/TodoItem/TodoItem";
-// import Axios from "../../axios/axios";
-import { connect } from "react-redux";
+import React, { Component } from 'react';
+import styles from './TodoList.module.scss';
+import Loader from '../../components/Loader/Loader';
+import TodoItem from '../../components/TodoItem/TodoItem';
+import { connect } from 'react-redux';
+import { NavLink, withRouter } from 'react-router-dom';
 import {
   fetchTodos,
   createTodo,
   finishCreateTodo,
-  // removeTodo,
   fetchRemoveTodo,
-} from "../../store/actions/todo";
+  setLoading,
+} from '../../store/actions/todo';
 
 class TodoList extends Component {
   state = {
-    text: "",
+    text: '',
   };
 
   createTodo = () => {
@@ -23,12 +23,13 @@ class TodoList extends Component {
       text: this.state.text,
       done: false,
     };
-    this.props.createTodo(todo);
-    this.setState({
-      text: "",
-    });
 
+    this.props.createTodo(todo);
     this.props.finishCreateTodo(todo);
+
+    this.setState({
+      text: '',
+    });
   };
 
   changeHandler = (value) => {
@@ -38,14 +39,6 @@ class TodoList extends Component {
   };
 
   onDeleteItem = (id) => {
-    console.log(id);
-    // var updatedTodos = this.props.todos.filter((item) => {
-    //   return item.id !== itemId;
-    // });
-
-    // this.setState({
-    //   todos: [].concat(updatedTodos),
-    // });
     this.props.fetchRemoveTodo(id);
     this.props.fetchTodos();
   };
@@ -63,6 +56,7 @@ class TodoList extends Component {
             <span>&bull;&bull;&bull;</span>
           </div>
         </div>
+
         <div className={styles.taskForm}>
           <div className={styles.taskForm__textOverflow}>
             <textarea
@@ -93,18 +87,19 @@ class TodoList extends Component {
           </div>
         </div>
 
-        {this.props.loading && this.props.todos.length !== 0 ? (
+        {this.props.loading ? (
           <Loader />
-        ) : this.props.todos.length > 0 ? (
+        ) : this.props.todos.length ? (
           <div className={styles.taskList}>
             {this.props.todos.map((todo, index) => {
               return (
                 <TodoItem
+                  todo={todo}
                   key={index}
                   text={todo.text}
+                  done={todo.done}
                   id={todo.id}
                   index={index}
-                  // onDeleteItem={this.props.onDeleteItem}
                   onDeleteItem={this.onDeleteItem}
                 />
               );
@@ -115,22 +110,36 @@ class TodoList extends Component {
         )}
 
         <div className={styles.taskControl}>
-          {/* <NavLink        
-        className={styles.taskControl__prevBtn styles.taskControl--btn}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-          <path d="M0 0h24v24H0z" fill="none" />
-        </svg>
-      </NavLink>
-      <NavLink
-        className={styles.taskControl__nextBtn styles.taskControl--btn}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-          <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-          <path d="M0 0h24v24H0z" fill="none" />
-        </svg>
-      </NavLink> */}
+          <NavLink
+            to=""
+            className={(styles.taskControl__prevBtn, styles.taskControl__btn)}
+          >
+            {/* .taskControl--btn */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+              <path d="M0 0h24v24H0z" fill="none" />
+            </svg>
+          </NavLink>
+          <NavLink
+            to={{ pathname: '/page/1', state: 'TodoList' }}
+            className={(styles.taskControl__nextBtn, styles.taskControl__btn)}
+          >
+            {/* styles.taskControl--btn */}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+              <path d="M0 0h24v24H0z" fill="none" />
+            </svg>
+          </NavLink>
         </div>
       </div>
     );
@@ -149,8 +158,9 @@ function mapDispatchToProps(dispatch) {
   return {
     fetchTodos: () => dispatch(fetchTodos()),
     createTodo: (item) => dispatch(createTodo(item)),
-    finishCreateTodo: (todo) => dispatch(finishCreateTodo(todo)),
+    finishCreateTodo: (item) => dispatch(finishCreateTodo(item)),
     fetchRemoveTodo: (id) => dispatch(fetchRemoveTodo(id)),
+    setLoading: (loading) => dispatch(setLoading(loading)),
   };
 }
 
