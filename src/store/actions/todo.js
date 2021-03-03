@@ -2,9 +2,10 @@ import Axios from '../../axios/axios';
 import {
   RENDER_TODOS,
   CREATE_TODO,
-  REMOVE_TODO,
+  // REMOVE_TODO,
   EDIT_TODO,
   TOGGLE_LOADER,
+  SORTING_TODOS,
 } from './actionTypes';
 
 // render todos
@@ -43,6 +44,13 @@ export function fetchTodos() {
     } catch (error) {
       console.log('error: ', error);
     }
+  };
+}
+
+//sorting todos
+export function sortingTodos() {
+  return {
+    type: SORTING_TODOS,
   };
 }
 

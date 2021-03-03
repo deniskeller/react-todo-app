@@ -49,6 +49,10 @@
   .taskForm {
     margin-bottom: 20px;
 
+    &__error {
+      border: 1px solid red;
+    }
+
     &__textOverflow {
       overflow: hidden;
       padding: 6px 8px 2px;

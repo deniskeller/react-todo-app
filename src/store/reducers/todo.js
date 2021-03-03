@@ -4,6 +4,7 @@ import {
   REMOVE_TODO,
   EDIT_TODO,
   TOGGLE_LOADER,
+  SORTING_TODOS,
 } from '../actions/actionTypes';
 
 const initialState = {
@@ -18,6 +19,12 @@ export default function todoReducer(state = initialState, action) {
       return {
         ...state,
         todos: action.todos,
+      };
+    //sorting todolist
+    case SORTING_TODOS:
+      return {
+        ...state,
+        todos: [...state.todos].reverse(),
       };
     // create todo
     case CREATE_TODO:
