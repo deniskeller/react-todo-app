@@ -16,8 +16,9 @@ class TodoItem extends Component {
     });
   };
 
-  deleteItem() {
-    this.props.onDeleteItem(this.props.id);
+  deleteItem(id) {
+    console.log('id 1: ', id);
+    this.props.onDeleteItem(id);
   }
 
   editItem() {
@@ -67,7 +68,7 @@ class TodoItem extends Component {
               Редактировать
             </div>
             <div
-              onClick={() => this.deleteItem()}
+              onClick={() => this.deleteItem(this.props.todo.id)}
               className={styles.taskList__item__menuItem}
             >
               Удалить

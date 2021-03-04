@@ -2,7 +2,7 @@ import Axios from '../../axios/axios';
 import {
   RENDER_TODOS,
   CREATE_TODO,
-  // REMOVE_TODO,
+  REMOVE_TODO,
   EDIT_TODO,
   TOGGLE_LOADER,
   SORTING_TODOS,
@@ -18,6 +18,7 @@ export function fetchTodos() {
         const data = response.data;
         const todos = Object.keys(data).map((item) => {
           return { ...data[item], id: item };
+          // userId: data[item].id
         });
         dispatch(fetchTodosStart(todos));
       });
@@ -77,7 +78,8 @@ export function setLoading(loading) {
 
 export function finishCreateTodo(todo) {
   return async (dispatch) => {
-    await Axios.post('/todos.json', todo);
+    const response = await Axios.post('/todos.json', todo);
+    todo.id = response.data.name;
   };
 }
 // delete todo
@@ -85,9 +87,16 @@ export function fetchRemoveTodo(id) {
   return async (dispatch) => {
     try {
       await Axios.delete('/todos/' + id + '.json');
+      dispatch(removeTodo(id));
     } catch (error) {
       console.log('error: ', error);
     }
+  };
+}
+export function removeTodo(id) {
+  return {
+    type: REMOVE_TODO,
+    id,
   };
 }
 // completed todo

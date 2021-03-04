@@ -22,7 +22,7 @@ class TodoList extends Component {
   createTodo = () => {
     if (this.state.text !== '') {
       const todo = {
-        id: this.props.todos.length + 1,
+        id: Math.random().toString(36).substr(2, 9) + Date.now(),
         text: this.state.text,
         done: false,
       };
@@ -61,16 +61,18 @@ class TodoList extends Component {
   };
 
   onDeleteItem = (id) => {
+    console.log('id 2: ', id);
+    console.log('props 2: ', this.props);
     this.props.fetchRemoveTodo(id);
-    this.props.fetchTodos();
+    // this.props.fetchTodos();
   };
 
   componentDidMount() {
     this.props.fetchTodos();
-    console.log('sort: ', this.props.todos);
   }
 
   render() {
+    // console.log('this.props: ', this.props);
     return (
       <div className={styles.taskContent}>
         <div className={styles.taskHeader}>

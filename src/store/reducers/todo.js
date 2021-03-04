@@ -34,11 +34,10 @@ export default function todoReducer(state = initialState, action) {
       };
     // delete todo
     case REMOVE_TODO:
-      return (state.todos = state.todos.filter((task) => {
-        if (task.id !== action.id) {
-          return task;
-        }
-      }));
+      return {
+        ...state,
+        todos: [...state.todos].filter((todo) => todo.id !== action.id),
+      };
     // completed todo
     case EDIT_TODO:
       return {
