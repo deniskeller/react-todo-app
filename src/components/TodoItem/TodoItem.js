@@ -17,7 +17,7 @@ class TodoItem extends Component {
   };
 
   deleteItem(id) {
-    console.log('id 1: ', id);
+    // console.log('id 1: ', id);
     this.props.onDeleteItem(id);
   }
 
@@ -35,10 +35,11 @@ class TodoItem extends Component {
       cls.push(styles.active);
     }
 
+    // console.log('this.props: ', this.props);
     return (
       <div className={cls.join(' ')}>
         <span>
-          {this.props.index + 1}) {this.props.text}
+          {this.props.todo.key}) {this.props.text}
         </span>
 
         <div

@@ -34,7 +34,7 @@ class TodoList extends Component {
         text: '',
         error: false,
       });
-      // if (this.page !== 1) this.$router.push("/page/1");
+      if (this.page !== 1) this.props.history.push('/page/1');
     } else {
       this.setState({
         error: true,
@@ -57,22 +57,59 @@ class TodoList extends Component {
 
   sortTodo = () => {
     this.props.sortingTodos();
-    console.log('sort: ', this.props.todos);
   };
 
   onDeleteItem = (id) => {
-    console.log('id 2: ', id);
-    console.log('props 2: ', this.props);
     this.props.fetchRemoveTodo(id);
-    // this.props.fetchTodos();
   };
 
   componentDidMount() {
     this.props.fetchTodos();
+    console.log('this.props: ', this.props);
+    console.log('pageNumber: ', this.pageNumber());
+
+    const pageNumber = this.pageNumber();
+    if (pageNumber <= 0) {
+      this.props.history.push('/page/1');
+    }
+  }
+
+  pageNumber() {
+    const page = +this.props.match.params.pageNumber;
+    return page;
+  }
+
+  todos(pageNumber) {
+    let tasks = this.props.todos.slice(0),
+      index = 1,
+      startIndex = pageNumber * 5,
+      endIndex = startIndex + 5;
+
+    tasks.forEach((task) => {
+      task.key = index;
+      index++;
+    });
+
+    tasks = tasks.slice(startIndex, endIndex);
+    return tasks;
   }
 
   render() {
-    // console.log('this.props: ', this.props);
+    const pageNumber = this.pageNumber();
+    console.log('pageNumber11111: ', pageNumber);
+
+    const todos = this.todos(pageNumber - 1);
+    let arrLength = Math.ceil(this.props.todos.length / 5);
+    console.log('arrLength: ', arrLength);
+
+    if (todos.length === 0 && pageNumber !== 1) {
+      this.props.history.push('/page/' + arrLength);
+    }
+
+    if (pageNumber <= 0) {
+      this.props.history.push('/page/1');
+    }
+
     return (
       <div className={styles.taskContent}>
         <div className={styles.taskHeader}>
@@ -116,11 +153,11 @@ class TodoList extends Component {
           <Loader />
         ) : this.props.todos.length ? (
           <div className={styles.taskList}>
-            {this.props.todos.map((todo, index) => {
+            {todos.map((todo, index) => {
               return (
                 <TodoItem
                   todo={todo}
-                  key={index}
+                  key={todo.key}
                   text={todo.text}
                   done={todo.done}
                   id={todo.id}
@@ -137,7 +174,7 @@ class TodoList extends Component {
         {this.props.todos.length > 3 ? (
           <div className={styles.taskControl}>
             <NavLink
-              to=""
+              to={{ pathname: '/page/' + (pageNumber - 1), state: 'TodoList' }}
               className={(styles.taskControl__prevBtn, styles.taskControl__btn)}
             >
               {/* .taskControl--btn */}
@@ -152,7 +189,7 @@ class TodoList extends Component {
               </svg>
             </NavLink>
             <NavLink
-              to={{ pathname: '/page/1', state: 'TodoList' }}
+              to={{ pathname: '/page/' + (pageNumber + 1), state: 'TodoList' }}
               className={(styles.taskControl__nextBtn, styles.taskControl__btn)}
             >
               {/* styles.taskControl--btn */}
@@ -176,7 +213,6 @@ class TodoList extends Component {
 function mapStateToProps(state) {
   return {
     todos: state.todo.todos,
-    todo: state.todo.todo,
     loading: state.todo.loading,
   };
 }
