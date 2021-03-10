@@ -5,14 +5,17 @@ import {
   EDIT_TODO,
   TOGGLE_LOADER,
   SORTING_TODOS,
+  SET_TODO,
 } from '../actions/actionTypes';
 
 const initialState = {
   todos: [],
+  todo: {},
   loading: false,
 };
 
 export default function todoReducer(state = initialState, action) {
+  console.log('initialState: ', state);
   switch (action.type) {
     // render list
     case RENDER_TODOS:
@@ -49,6 +52,11 @@ export default function todoReducer(state = initialState, action) {
         loading: action.loading,
       };
     // edit todo
+    case SET_TODO:
+      return {
+        ...state,
+        todo: Object.assign({}, action.todo),
+      };
     default:
       return state;
   }

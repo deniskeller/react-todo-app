@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import styles from './TodoEdit.module.scss';
+import { fetchTodos, fetchGetItem } from '../../store/actions/todo';
 
 class TodoEdit extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: null,
+      value: '',
       error: false,
+      todoId: +this.props.match.params.id,
+      newText: '',
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -17,12 +21,13 @@ class TodoEdit extends Component {
   }
 
   goBack = () => {
-    this.props.history.push('/');
+    this.props.history.goBack();
   };
 
-  componentWillMount() {
-    console.log('will props: ', this.props);
-    this.setState({ value: this.props.history.location.params.todo.text });
+  componentDidMount() {
+    const data = JSON.parse(localStorage.getItem('todoItem'));
+    this.props.fetchGetItem(data.id);
+    console.log('props TodoEdit: ', this.props);
   }
 
   render() {
@@ -49,4 +54,19 @@ class TodoEdit extends Component {
   }
 }
 
-export default TodoEdit;
+function mapStateToProps(state) {
+  console.log('state TodoEdit: ', state);
+  return {
+    todo: state.todo.todo,
+    todos: state.todo.todos,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchTodos: () => dispatch(fetchTodos()),
+    fetchGetItem: (id) => dispatch(fetchGetItem(id)),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(TodoEdit);

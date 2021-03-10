@@ -3,6 +3,7 @@ import {
   RENDER_TODOS,
   CREATE_TODO,
   REMOVE_TODO,
+  SET_TODO,
   EDIT_TODO,
   TOGGLE_LOADER,
   SORTING_TODOS,
@@ -18,40 +19,12 @@ export function fetchTodos() {
         const data = response.data;
         const todos = Object.keys(data).map((item) => {
           return { ...data[item], id: item };
-          // userId: data[item].id
         });
         dispatch(fetchTodosStart(todos));
       });
-
-      // if (data.length === 0) {
-      //   dispatch(setLoading(false));
-      // }
-      // console.log('todos.length: ', todos.length);
-
-      // return function (pageNumber) {
-      //   let tasks = state.tasks.slice(0),
-      //     index = 1,
-      //     startIndex = pageNumber * 10,
-      //     endIndex = startIndex + 10;
-
-      //   tasks.forEach((task) => {
-      //     task.key = index;
-      //     index++;
-      //   });
-
-      //   tasks = tasks.slice(startIndex, endIndex);
-      //   return tasks;
-      // }
     } catch (error) {
       console.log('error: ', error);
     }
-  };
-}
-
-//sorting todos
-export function sortingTodos() {
-  return {
-    type: SORTING_TODOS,
   };
 }
 
@@ -59,6 +32,12 @@ export function fetchTodosStart(todos) {
   return {
     type: RENDER_TODOS,
     todos,
+  };
+}
+//sorting todos
+export function sortingTodos() {
+  return {
+    type: SORTING_TODOS,
   };
 }
 // create todo
@@ -101,6 +80,32 @@ export function removeTodo(id) {
 }
 // completed todo
 // edit todo
+export function fetchGetItem(id) {
+  // console.log('id: ', id);
+  return async (dispatch) => {
+    try {
+      await Axios.get('/todos.json').then((response) => {
+        const data = response.data;
+        const todos = Object.keys(data).map((item) => {
+          return { ...data[item], id: item };
+        });
+        // console.log('todos: ', todos);
+        const todo = todos.find((todo) => todo.id == id);
+        // console.log('todo: ', todo);
+
+        dispatch(setItem(todo));
+      });
+    } catch (error) {
+      console.log('error: ', error);
+    }
+  };
+}
+export function setItem(todo) {
+  return {
+    type: SET_TODO,
+    todo,
+  };
+}
 export function editTodo(id) {
   return {
     type: EDIT_TODO,

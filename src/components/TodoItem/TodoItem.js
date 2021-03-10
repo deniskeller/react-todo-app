@@ -26,7 +26,10 @@ class TodoItem extends Component {
       pathname: '/TodoEdit/' + (this.props.index + 1),
       params: { todo: this.props.todo },
     });
-    console.log('this.props.history: ', this.props.history);
+    localStorage.setItem('todoItem', JSON.stringify(this.props.todo));
+  }
+  componentDidMount() {
+    // console.log('this.props.todo: ', this.props.todo);
   }
 
   render() {

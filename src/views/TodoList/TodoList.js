@@ -64,9 +64,9 @@ class TodoList extends Component {
   };
 
   componentDidMount() {
-    this.props.fetchTodos();
-    console.log('this.props: ', this.props);
-    console.log('pageNumber: ', this.pageNumber());
+    // this.props.fetchTodos();
+    // console.log('this.props: ', this.props);
+    // console.log('pageNumber: ', this.pageNumber());
 
     const pageNumber = this.pageNumber();
     if (pageNumber <= 0) {
@@ -96,16 +96,12 @@ class TodoList extends Component {
 
   render() {
     const pageNumber = this.pageNumber();
-    console.log('pageNumber11111: ', pageNumber);
-
     const todos = this.todos(pageNumber - 1);
     let arrLength = Math.ceil(this.props.todos.length / 5);
-    console.log('arrLength: ', arrLength);
 
     if (todos.length === 0 && pageNumber !== 1) {
       this.props.history.push('/page/' + arrLength);
     }
-
     if (pageNumber <= 0) {
       this.props.history.push('/page/1');
     }
@@ -211,6 +207,7 @@ class TodoList extends Component {
 }
 
 function mapStateToProps(state) {
+  console.log('state: ', state);
   return {
     todos: state.todo.todos,
     loading: state.todo.loading,

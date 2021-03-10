@@ -10,4 +10,5 @@ export const REMOVE_TODO = 'REMOVE_TODO';
 // completed todo
 export const COMPLETED_TODO = 'COMPLETED_TODO';
 // edit todo
+export const SET_TODO = 'SET_TODO';
 export const EDIT_TODO = 'EDIT_TODO';
