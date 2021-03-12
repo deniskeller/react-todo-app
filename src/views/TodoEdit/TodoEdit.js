@@ -32,7 +32,7 @@ class TodoEdit extends Component {
     this.props.fetchGetItem(data.id);
     // this.props.fetchGetItem(this.state.todoId);
     console.log('props TodoEdit componentDidMount: ', this.props);
-    // this.setState({ value: this.props.todo.text });
+    this.setState({ value: this.props.todo.text });
   }
 
   componentDidUpdate() {

@@ -65,7 +65,12 @@ class TodoList extends Component {
     this.props.fetchRemoveTodo(id);
   };
 
-  todos(pageNumber) {
+  pageNumber = () => {
+    const pageNumber = +this.props.history.location.pathname.split('/')[2];
+    return pageNumber;
+  };
+
+  todos = (pageNumber) => {
     let tasks = this.props.todos.slice(0),
       index = 1,
       startIndex = pageNumber * 5,
@@ -76,18 +81,15 @@ class TodoList extends Component {
       index++;
     });
     tasks = tasks.slice(startIndex, endIndex);
-    // console.log('tasks: ', tasks);
     return tasks;
-  }
+  };
+
   componentDidMount() {
     console.log('this.props: ', this.props);
-    const pageNumber = +this.props.history.location.pathname.split('/')[2];
-    this.todos(pageNumber - 1);
+    this.pageNumber();
   }
 
   render() {
-    const pageNumber = +this.props.history.location.pathname.split('/')[2];
-    const todos = this.todos(pageNumber - 1);
     // let arrLength = Math.ceil(this.props.todos.length / 5);
     // if (todos.length == 0 && pageNumber !== 1) {
     //   this.props.history.push('/page/' + arrLength);
@@ -139,7 +141,7 @@ class TodoList extends Component {
           <Loader />
         ) : this.props.todos.length ? (
           <div className={styles.taskList}>
-            {todos.map((todo, index) => {
+            {this.todos(this.pageNumber() - 1).map((todo, index) => {
               return (
                 <TodoItem
                   todo={todo}
@@ -160,7 +162,10 @@ class TodoList extends Component {
         {this.props.todos.length > 3 ? (
           <div className={styles.taskControl}>
             <NavLink
-              to={{ pathname: '/page/' + (pageNumber - 1), state: 'TodoList' }}
+              to={{
+                pathname: '/page/' + (this.pageNumber() - 1),
+                state: 'TodoList',
+              }}
               className={(styles.taskControl__prevBtn, styles.taskControl__btn)}
             >
               {/* .taskControl--btn */}
@@ -175,7 +180,10 @@ class TodoList extends Component {
               </svg>
             </NavLink>
             <NavLink
-              to={{ pathname: '/page/' + (pageNumber + 1), state: 'TodoList' }}
+              to={{
+                pathname: '/page/' + (this.pageNumber() + 1),
+                state: 'TodoList',
+              }}
               className={(styles.taskControl__nextBtn, styles.taskControl__btn)}
             >
               {/* styles.taskControl--btn */}
