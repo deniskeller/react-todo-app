@@ -11,12 +11,14 @@ import {
   fetchRemoveTodo,
   setLoading,
   sortingTodos,
+  fetchTodosStart,
 } from '../../store/actions/todo';
 
 class TodoList extends Component {
   state = {
     text: '',
     error: false,
+    todos: [],
   };
 
   createTodo = () => {
@@ -63,22 +65,6 @@ class TodoList extends Component {
     this.props.fetchRemoveTodo(id);
   };
 
-  componentDidMount() {
-    // this.props.fetchTodos();
-    // console.log('this.props: ', this.props);
-    // console.log('pageNumber: ', this.pageNumber());
-
-    const pageNumber = this.pageNumber();
-    if (pageNumber <= 0) {
-      this.props.history.push('/page/1');
-    }
-  }
-
-  pageNumber() {
-    const page = +this.props.match.params.pageNumber;
-    return page;
-  }
-
   todos(pageNumber) {
     let tasks = this.props.todos.slice(0),
       index = 1,
@@ -89,22 +75,26 @@ class TodoList extends Component {
       task.key = index;
       index++;
     });
-
     tasks = tasks.slice(startIndex, endIndex);
+    // console.log('tasks: ', tasks);
     return tasks;
+  }
+  componentDidMount() {
+    console.log('this.props: ', this.props);
+    const pageNumber = +this.props.history.location.pathname.split('/')[2];
+    this.todos(pageNumber - 1);
   }
 
   render() {
-    const pageNumber = this.pageNumber();
+    const pageNumber = +this.props.history.location.pathname.split('/')[2];
     const todos = this.todos(pageNumber - 1);
-    let arrLength = Math.ceil(this.props.todos.length / 5);
-
-    if (todos.length === 0 && pageNumber !== 1) {
-      this.props.history.push('/page/' + arrLength);
-    }
-    if (pageNumber <= 0) {
-      this.props.history.push('/page/1');
-    }
+    // let arrLength = Math.ceil(this.props.todos.length / 5);
+    // if (todos.length == 0 && pageNumber !== 1) {
+    //   this.props.history.push('/page/' + arrLength);
+    // }
+    // if ((pageNumber <= 0)) {
+    //   this.props.history.push('/page/1');
+    // }
 
     return (
       <div className={styles.taskContent}>
@@ -207,7 +197,7 @@ class TodoList extends Component {
 }
 
 function mapStateToProps(state) {
-  console.log('state: ', state);
+  // console.log('state: ', state);
   return {
     todos: state.todo.todos,
     loading: state.todo.loading,
@@ -222,6 +212,7 @@ function mapDispatchToProps(dispatch) {
     fetchRemoveTodo: (id) => dispatch(fetchRemoveTodo(id)),
     setLoading: (loading) => dispatch(setLoading(loading)),
     sortingTodos: () => dispatch(sortingTodos()),
+    fetchTodosStart: (todos) => dispatch(fetchTodosStart(todos)),
   };
 }
 

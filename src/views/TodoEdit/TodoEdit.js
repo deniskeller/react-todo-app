@@ -1,15 +1,18 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import styles from './TodoEdit.module.scss';
+import { withRouter } from 'react-router-dom';
 import { fetchTodos, fetchGetItem } from '../../store/actions/todo';
+import styles from './TodoEdit.module.scss';
+import Textarea from '../../components/Textarea/Textarea';
 
 class TodoEdit extends Component {
   constructor(props) {
+    // console.log('props: ', props);
     super(props);
     this.state = {
       value: '',
       error: false,
-      todoId: +this.props.match.params.id,
+      // todoId: this.props.location.params.todoId,
       newText: '',
     };
 
@@ -27,7 +30,16 @@ class TodoEdit extends Component {
   componentDidMount() {
     const data = JSON.parse(localStorage.getItem('todoItem'));
     this.props.fetchGetItem(data.id);
-    console.log('props TodoEdit: ', this.props);
+    // this.props.fetchGetItem(this.state.todoId);
+    console.log('props TodoEdit componentDidMount: ', this.props);
+    // this.setState({ value: this.props.todo.text });
+  }
+
+  componentDidUpdate() {
+    console.log('this.props componentDidUpdate: ', this.props);
+    // const data = JSON.parse(localStorage.getItem('todoItem'));
+    // this.setState({ value: this.props.todo.text });
+    // this.props.fetchGetItem(data.id);
   }
 
   render() {
@@ -40,7 +52,8 @@ class TodoEdit extends Component {
             value={this.state.value}
             onChange={this.handleChange}
           ></textarea>
-          <p>{this.props.index}</p>
+          {/* <p>{this.props.index}</p> */}
+          {/* <Textarea value={this.props.todo.text} /> */}
         </div>
 
         <div className={styles.taskEdit__buttons}>
@@ -55,7 +68,7 @@ class TodoEdit extends Component {
 }
 
 function mapStateToProps(state) {
-  console.log('state TodoEdit: ', state);
+  // console.log('state TodoEdit: ', state);
   return {
     todo: state.todo.todo,
     todos: state.todo.todos,
@@ -69,4 +82,6 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TodoEdit);
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(TodoEdit)
+);

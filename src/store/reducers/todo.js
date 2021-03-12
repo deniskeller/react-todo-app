@@ -6,6 +6,7 @@ import {
   TOGGLE_LOADER,
   SORTING_TODOS,
   SET_TODO,
+  GET_TODOS,
 } from '../actions/actionTypes';
 
 const initialState = {
@@ -15,10 +16,16 @@ const initialState = {
 };
 
 export default function todoReducer(state = initialState, action) {
-  console.log('initialState: ', state);
+  // console.log('initialState: ', state);
   switch (action.type) {
     // render list
     case RENDER_TODOS:
+      return {
+        ...state,
+        todos: action.todos,
+      };
+
+    case GET_TODOS:
       return {
         ...state,
         todos: action.todos,
@@ -55,7 +62,7 @@ export default function todoReducer(state = initialState, action) {
     case SET_TODO:
       return {
         ...state,
-        todo: Object.assign({}, action.todo),
+        todo: action.todo,
       };
     default:
       return state;

@@ -24,10 +24,19 @@ class App extends Component {
     );
   }
 }
+
+function mapStateToProps(state) {
+  // console.log('state app: ', state);
+  return {
+    todo: state.todo.todo,
+    todos: state.todo.todos,
+  };
+}
+
 function mapDispatchToProps(dispatch) {
   return {
     fetchTodos: () => dispatch(fetchTodos()),
   };
 }
 
-export default withRouter(connect(null, mapDispatchToProps)(App));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(App));

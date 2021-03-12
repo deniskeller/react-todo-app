@@ -1,5 +1,6 @@
 // render todos
 export const RENDER_TODOS = 'RENDER_TODOS';
+export const GET_TODOS = 'GET_TODOS';
 export const SORTING_TODOS = 'SORTING_TODOS';
 //loader
 export const TOGGLE_LOADER = 'TOGGLE_LOADER';

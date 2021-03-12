@@ -7,11 +7,12 @@ import {
   EDIT_TODO,
   TOGGLE_LOADER,
   SORTING_TODOS,
+  GET_TODOS,
 } from './actionTypes';
 
 // render todos
 export function fetchTodos() {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     try {
       dispatch(setLoading(true));
       await Axios.get('/todos.json').then((response) => {
@@ -81,18 +82,16 @@ export function removeTodo(id) {
 // completed todo
 // edit todo
 export function fetchGetItem(id) {
-  // console.log('id: ', id);
-  return async (dispatch) => {
+  console.log('id: ', id);
+  return (dispatch, getState) => {
+    dispatch(fetchTodos());
     try {
-      await Axios.get('/todos.json').then((response) => {
+      Axios.get('/todos.json').then((response) => {
         const data = response.data;
         const todos = Object.keys(data).map((item) => {
           return { ...data[item], id: item };
         });
-        // console.log('todos: ', todos);
-        const todo = todos.find((todo) => todo.id == id);
-        // console.log('todo: ', todo);
-
+        const todo = todos.find((todo) => todo.id === id);
         dispatch(setItem(todo));
       });
     } catch (error) {
@@ -110,5 +109,12 @@ export function editTodo(id) {
   return {
     type: EDIT_TODO,
     id,
+  };
+}
+
+export function getTodos(todos) {
+  return {
+    type: GET_TODOS,
+    todos,
   };
 }
