@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-import { fetchTodos, fetchGetItem } from '../../store/actions/todo';
+import {
+  fetchTodos,
+  fetchGetItem,
+  fetchEditTodo,
+} from '../../store/actions/todo';
 import styles from './TodoEdit.module.scss';
-import Textarea from '../../components/Textarea/Textarea';
 
 class TodoEdit extends Component {
   constructor(props) {
-    // console.log('props: ', props);
     super(props);
     this.state = {
       value: '',
       error: false,
-      // todoId: this.props.location.params.todoId,
+      todoId: this.props.location.state.todoId,
       newText: '',
     };
 
@@ -27,19 +29,31 @@ class TodoEdit extends Component {
     this.props.history.goBack();
   };
 
+  editTodo = () => {
+    if (this.state.value) {
+      console.log('this.props.todo: ', this.props.todo);
+      const todo = this.props.todo;
+      todo.text = this.state.value;
+      console.log('todo: ', todo);
+      // console.log('this.props.todo: ', this.props.todo);
+      this.props.fetchEditTodo(todo);
+      console.log('this.state.value: ', this.state.value);
+      this.props.history.goBack();
+    }
+    this.state.error = true;
+    console.log('error');
+  };
+
   componentDidMount() {
-    const data = JSON.parse(localStorage.getItem('todoItem'));
-    this.props.fetchGetItem(data.id);
-    // this.props.fetchGetItem(this.state.todoId);
-    console.log('props TodoEdit componentDidMount: ', this.props);
-    this.setState({ value: this.props.todo.text });
+    this.props.fetchGetItem(this.state.todoId);
   }
 
-  componentDidUpdate() {
-    console.log('this.props componentDidUpdate: ', this.props);
-    // const data = JSON.parse(localStorage.getItem('todoItem'));
-    // this.setState({ value: this.props.todo.text });
-    // this.props.fetchGetItem(data.id);
+  componentDidUpdate(prevProps) {
+    // console.log('prevProps: ', prevProps);
+    // console.log('this.props componentDidUpdate: ', this.props);
+    if (prevProps.todo != this.props.todo) {
+      this.setState({ value: this.props.todo.text });
+    }
   }
 
   render() {
@@ -52,12 +66,12 @@ class TodoEdit extends Component {
             value={this.state.value}
             onChange={this.handleChange}
           ></textarea>
-          {/* <p>{this.props.index}</p> */}
-          {/* <Textarea value={this.props.todo.text} /> */}
         </div>
 
         <div className={styles.taskEdit__buttons}>
-          <button className={styles.btnSave}>Save</button>
+          <button className={styles.btnSave} onClick={this.editTodo}>
+            Save
+          </button>
           <div className={styles.btnBack} onClick={this.goBack}>
             Back
           </div>
@@ -68,7 +82,6 @@ class TodoEdit extends Component {
 }
 
 function mapStateToProps(state) {
-  // console.log('state TodoEdit: ', state);
   return {
     todo: state.todo.todo,
     todos: state.todo.todos,
@@ -79,6 +92,7 @@ function mapDispatchToProps(dispatch) {
   return {
     fetchTodos: () => dispatch(fetchTodos()),
     fetchGetItem: (id) => dispatch(fetchGetItem(id)),
+    fetchEditTodo: (todo) => dispatch(fetchEditTodo(todo)),
   };
 }
 

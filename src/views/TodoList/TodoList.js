@@ -85,19 +85,27 @@ class TodoList extends Component {
   };
 
   componentDidMount() {
-    console.log('this.props: ', this.props);
-    this.pageNumber();
+    // let arrLength = Math.ceil(this.props.todos.length / 5);
+    // if (this.props.todos.length === 0 && this.pageNumber() !== 1) {
+    //   this.props.history.push('/page/' + arrLength);
+    // }
+    // if (this.pageNumber() <= 0) {
+    //   this.props.history.push('/page/1');
+    // }
+    // console.log('this.props: ', this.props);
+  }
+  componentDidUpdate() {
+    if (this.pageNumber() <= 0) {
+      this.props.history.push('/page/1');
+    }
+    let arrLength = Math.ceil(this.props.todos.length / 5);
+    console.log('arrLength: ', arrLength);
+    // if (this.props.todos.length === 0 && this.pageNumber() !== 1) {
+    //   this.props.history.push('/page/' + arrLength);
+    // }
   }
 
   render() {
-    // let arrLength = Math.ceil(this.props.todos.length / 5);
-    // if (todos.length == 0 && pageNumber !== 1) {
-    //   this.props.history.push('/page/' + arrLength);
-    // }
-    // if ((pageNumber <= 0)) {
-    //   this.props.history.push('/page/1');
-    // }
-
     return (
       <div className={styles.taskContent}>
         <div className={styles.taskHeader}>

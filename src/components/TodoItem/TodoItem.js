@@ -24,10 +24,8 @@ class TodoItem extends Component {
   editItem() {
     this.props.history.push({
       pathname: '/TodoEdit/' + this.props.todo.key,
-      params: { todoId: this.props.todo.id },
+      state: { todoId: this.props.todo.id },
     });
-    // console.log('this.props.todo: ', this.props.todo);
-    localStorage.setItem('todoItem', JSON.stringify(this.props.todo));
   }
   componentDidMount() {
     // console.log('this.props.todo: ', this.props.todo);
@@ -39,7 +37,6 @@ class TodoItem extends Component {
       cls.push(styles.active);
     }
 
-    // console.log('this.props: ', this.props);
     return (
       <div className={cls.join(' ')}>
         <span>

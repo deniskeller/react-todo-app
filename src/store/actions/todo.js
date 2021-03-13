@@ -12,7 +12,7 @@ import {
 
 // render todos
 export function fetchTodos() {
-  return async (dispatch, getState) => {
+  return async (dispatch) => {
     try {
       dispatch(setLoading(true));
       await Axios.get('/todos.json').then((response) => {
@@ -82,8 +82,7 @@ export function removeTodo(id) {
 // completed todo
 // edit todo
 export function fetchGetItem(id) {
-  console.log('id: ', id);
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch(fetchTodos());
     try {
       Axios.get('/todos.json').then((response) => {
@@ -105,6 +104,21 @@ export function setItem(todo) {
     todo,
   };
 }
+
+export function fetchEditTodo(todo) {
+  return (dispatch) => {
+    try {
+      Axios.put('/todos/' + todo.id + '.json', {
+        ...todo,
+        text: todo.text,
+      }).then((response) => {
+        console.log(response);
+        dispatch(fetchTodos());
+      });
+    } catch (error) {}
+  };
+}
+
 export function editTodo(id) {
   return {
     type: EDIT_TODO,
