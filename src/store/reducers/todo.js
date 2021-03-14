@@ -7,6 +7,7 @@ import {
   SORTING_TODOS,
   SET_TODO,
   GET_TODOS,
+  COMPLETED_TODO,
 } from '../actions/actionTypes';
 
 const initialState = {
@@ -49,16 +50,34 @@ export default function todoReducer(state = initialState, action) {
         todos: [...state.todos].filter((todo) => todo.id !== action.id),
       };
     // completed todo
+    case COMPLETED_TODO:
+      return {
+        ...state,
+        todos: state.todos.map((todo) => {
+          if (todo.id !== action.newTodo.id) {
+            return todo;
+          } else {
+            return { ...todo, done: !action.newTodo.done };
+          }
+        }),
+      };
+    // edit todo
     case EDIT_TODO:
       return {
         ...state,
+        todos: state.todos.map((todo) => {
+          if (todo.id !== action.newTodo.id) {
+            return todo;
+          } else {
+            return { ...todo, text: action.newTodo.text };
+          }
+        }),
       };
     case TOGGLE_LOADER:
       return {
         ...state,
         loading: action.loading,
       };
-    // edit todo
     case SET_TODO:
       return {
         ...state,

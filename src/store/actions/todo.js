@@ -8,6 +8,7 @@ import {
   TOGGLE_LOADER,
   SORTING_TODOS,
   GET_TODOS,
+  COMPLETED_TODO,
 } from './actionTypes';
 
 // render todos
@@ -80,6 +81,25 @@ export function removeTodo(id) {
   };
 }
 // completed todo
+export function fetchCompletedTodo(newTodo) {
+  return (dispatch) => {
+    try {
+      Axios.put('/todos/' + newTodo.id + '.json', {
+        ...newTodo,
+        done: !newTodo.done,
+      }).then((response) => {
+        console.log(response);
+        dispatch(completedTodo(newTodo));
+      });
+    } catch (error) {}
+  };
+}
+export function completedTodo(newTodo) {
+  return {
+    type: COMPLETED_TODO,
+    newTodo,
+  };
+}
 // edit todo
 export function fetchGetItem(id) {
   return (dispatch) => {
@@ -105,24 +125,24 @@ export function setItem(todo) {
   };
 }
 
-export function fetchEditTodo(todo) {
+export function fetchEditTodo(newTodo) {
   return (dispatch) => {
     try {
-      Axios.put('/todos/' + todo.id + '.json', {
-        ...todo,
-        text: todo.text,
+      Axios.put('/todos/' + newTodo.id + '.json', {
+        ...newTodo,
+        text: newTodo.text,
       }).then((response) => {
         console.log(response);
-        dispatch(fetchTodos());
+        dispatch(editTodo(newTodo));
       });
     } catch (error) {}
   };
 }
 
-export function editTodo(id) {
+export function editTodo(newTodo) {
   return {
     type: EDIT_TODO,
-    id,
+    newTodo,
   };
 }
 

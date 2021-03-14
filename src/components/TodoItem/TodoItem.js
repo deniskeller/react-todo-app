@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import styles from './TodoItem.module.scss';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
+import { fetchCompletedTodo } from '../../store/actions/todo';
+import styles from './TodoItem.module.scss';
 
 class TodoItem extends Component {
   state = {
@@ -16,8 +18,12 @@ class TodoItem extends Component {
     });
   };
 
+  completedTodo = (todo) => {
+    console.log('todo: ', todo);
+    this.props.fetchCompletedTodo(todo);
+  };
+
   deleteItem(id) {
-    // console.log('id 1: ', id);
     this.props.onDeleteItem(id);
   }
 
@@ -61,7 +67,12 @@ class TodoItem extends Component {
 
         {this.state.is_show_menu ? (
           <div className={styles.taskList__item__menu} id="menu">
-            <div className={styles.taskList__item__menuItem}>Выполнено</div>
+            <div
+              className={styles.taskList__item__menuItem}
+              onClick={() => this.completedTodo(this.props.todo)}
+            >
+              Выполнено
+            </div>
 
             <div
               className={styles.taskList__item__menuItem}
@@ -82,4 +93,10 @@ class TodoItem extends Component {
   }
 }
 
-export default withRouter(TodoItem);
+function mapDispatchToProps(dispatch) {
+  return {
+    fetchCompletedTodo: (newTodo) => dispatch(fetchCompletedTodo(newTodo)),
+  };
+}
+
+export default withRouter(connect(null, mapDispatchToProps)(TodoItem));

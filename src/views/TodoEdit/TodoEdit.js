@@ -31,17 +31,12 @@ class TodoEdit extends Component {
 
   editTodo = () => {
     if (this.state.value) {
-      console.log('this.props.todo: ', this.props.todo);
-      const todo = this.props.todo;
-      todo.text = this.state.value;
-      console.log('todo: ', todo);
-      // console.log('this.props.todo: ', this.props.todo);
-      this.props.fetchEditTodo(todo);
-      console.log('this.state.value: ', this.state.value);
+      const newTodo = this.props.todo;
+      newTodo.text = this.state.value;
+      this.props.fetchEditTodo(newTodo);
       this.props.history.goBack();
     }
-    this.state.error = true;
-    console.log('error');
+    this.setState({ error: true });
   };
 
   componentDidMount() {
@@ -49,9 +44,7 @@ class TodoEdit extends Component {
   }
 
   componentDidUpdate(prevProps) {
-    // console.log('prevProps: ', prevProps);
-    // console.log('this.props componentDidUpdate: ', this.props);
-    if (prevProps.todo != this.props.todo) {
+    if (prevProps.todo !== this.props.todo) {
       this.setState({ value: this.props.todo.text });
     }
   }
@@ -92,7 +85,7 @@ function mapDispatchToProps(dispatch) {
   return {
     fetchTodos: () => dispatch(fetchTodos()),
     fetchGetItem: (id) => dispatch(fetchGetItem(id)),
-    fetchEditTodo: (todo) => dispatch(fetchEditTodo(todo)),
+    fetchEditTodo: (newTodo) => dispatch(fetchEditTodo(newTodo)),
   };
 }
 
