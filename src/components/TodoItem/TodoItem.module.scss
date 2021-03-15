@@ -23,6 +23,10 @@
     }
   }
 
+  &__done {
+    text-decoration: line-through;
+  }
+
   &__edit {
     display: none;
     position: absolute;
@@ -89,8 +93,4 @@
       fill: #000;
     }
   }
-}
-
-.taskList__item--done {
-  text-decoration: line-through;
 }

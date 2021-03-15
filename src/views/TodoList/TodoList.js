@@ -4,6 +4,7 @@ import Loader from '../../components/Loader/Loader';
 import TodoItem from '../../components/TodoItem/TodoItem';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import {
   fetchTodos,
   createTodo,
@@ -85,29 +86,40 @@ class TodoList extends Component {
   };
 
   componentDidMount() {
-    // let arrLength = Math.ceil(this.props.todos.length / 5);
-    // if (this.props.todos.length === 0 && this.pageNumber() !== 1) {
-    //   this.props.history.push('/page/' + arrLength);
-    // }
+    console.log('this.pageNumber() componentDidMount: ', this.pageNumber());
+    let arrLength = Math.ceil(this.props.todos.length / 5);
+    console.log('arrLength componentDidMount: ', arrLength);
+    if (
+      this.todos(this.pageNumber() - 1).length === 0 &&
+      this.pageNumber() !== 1
+    ) {
+      this.props.history.push('/page/' + arrLength);
+    }
     // if (this.pageNumber() <= 0) {
     //   this.props.history.push('/page/1');
     // }
-    // console.log('this.props componentDidMount Todolist: ', this.props);
   }
-  componentDidUpdate() {
-    console.log('this.props componentDidUpdate Todolist: ', this.props);
-    // if (this.pageNumber() <= 0) {
-    //   this.props.history.push('/page/1');
-    // }
-    // let arrLength = Math.ceil(this.props.todos.length / 5);
-    // console.log('arrLength: ', arrLength);
-    // if (this.props.todos.length === 0 && this.pageNumber() !== 1) {
-    //   this.props.history.push('/page/' + arrLength);
-    // }
+  componentDidUpdate(prevProps) {
+    console.log('this.pageNumber() componentDidUpdate: ', this.pageNumber());
+    if (prevProps !== this.props) {
+      if (this.pageNumber() <= 0) {
+        this.props.history.push('/page/1');
+      }
+      let arrLength = Math.ceil(this.props.todos.length / 5);
+      console.log('arrLength componentDidUpdate: ', arrLength);
+      if (this.props.todos.length === 0 && this.pageNumber() !== 1) {
+        this.props.history.push('/page/' + arrLength);
+      }
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    // console.log('nextState: ', nextState);
+    // console.log('nextProps: ', nextProps);.
+    return true;
   }
 
   render() {
-    // console.log('this.props.todos: ', this.props);
     return (
       <div className={styles.taskContent}>
         <div className={styles.taskHeader}>
@@ -234,4 +246,6 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TodoList);
+export default withRouter(
+  connect(mapStateToProps, mapDispatchToProps)(TodoList)
+);

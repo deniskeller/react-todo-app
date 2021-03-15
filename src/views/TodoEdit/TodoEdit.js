@@ -22,7 +22,7 @@ class TodoEdit extends Component {
   }
 
   handleChange(event) {
-    this.setState({ value: event.target.value });
+    this.setState({ value: event.target.value, error: false });
   }
 
   goBack = () => {
@@ -35,8 +35,9 @@ class TodoEdit extends Component {
       newTodo.text = this.state.value;
       this.props.fetchEditTodo(newTodo);
       this.props.history.goBack();
+    } else {
+      this.setState({ error: true });
     }
-    this.setState({ error: true });
   };
 
   componentDidMount() {
@@ -52,7 +53,11 @@ class TodoEdit extends Component {
   render() {
     return (
       <div className={styles.taskEdit}>
-        <div className={styles.taskEdit__textOverflow}>
+        <div
+          className={`${styles.taskEdit__textOverflow} ${
+            this.state.error ? styles.error : ''
+          }`}
+        >
           <textarea
             className={styles.taskEdit__text}
             placeholder="Enter a title for this card..."
