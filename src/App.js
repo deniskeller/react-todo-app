@@ -9,6 +9,8 @@ import { fetchTodos } from './store/actions/todo';
 class App extends Component {
   componentDidMount() {
     this.props.fetchTodos();
+    if (this.props.location.pathname === '/')
+      this.props.history.push('/page/1');
   }
 
   render() {
@@ -18,7 +20,7 @@ class App extends Component {
           <Route path="/" exact component={TodoList} />
           <Route path="/page/:pageNumber" component={TodoList} />
           <Route path="/TodoEdit/:id" component={TodoEdit} />
-          <Redirect to="/" />
+          <Redirect to="/page/1" />
         </Switch>
       </Layout>
     );

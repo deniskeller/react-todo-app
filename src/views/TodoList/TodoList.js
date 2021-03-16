@@ -37,7 +37,9 @@ class TodoList extends Component {
         text: '',
         error: false,
       });
-      if (this.page !== 1) this.props.history.push('/page/1');
+      // if (this.page !== 1) this.props.history.push('/page/1');
+      const pageCount = Math.ceil((this.props.todos.length + 1) / 5);
+      if (this.page !== 1) this.props.history.push('/page/' + pageCount);
     } else {
       this.setState({
         error: true,
@@ -68,6 +70,7 @@ class TodoList extends Component {
 
   pageNumber = () => {
     const pageNumber = +this.props.history.location.pathname.split('/')[2];
+    console.log('pageNumber: ', pageNumber);
     return pageNumber;
   };
 
@@ -85,38 +88,39 @@ class TodoList extends Component {
     return tasks;
   };
 
-  componentDidMount() {
-    console.log('this.pageNumber() componentDidMount: ', this.pageNumber());
-    let arrLength = Math.ceil(this.props.todos.length / 5);
-    console.log('arrLength componentDidMount: ', arrLength);
-    if (
-      this.todos(this.pageNumber() - 1).length === 0 &&
-      this.pageNumber() !== 1
-    ) {
-      this.props.history.push('/page/' + arrLength);
-    }
-    // if (this.pageNumber() <= 0) {
-    //   this.props.history.push('/page/1');
-    // }
-  }
-  componentDidUpdate(prevProps) {
-    console.log('this.pageNumber() componentDidUpdate: ', this.pageNumber());
-    if (prevProps !== this.props) {
+  load = () => {
+    if (this.props.todos.length > 0) {
+      const pageCount = Math.ceil(this.props.todos.length / 5);
       if (this.pageNumber() <= 0) {
         this.props.history.push('/page/1');
       }
-      let arrLength = Math.ceil(this.props.todos.length / 5);
-      console.log('arrLength componentDidUpdate: ', arrLength);
-      if (this.props.todos.length === 0 && this.pageNumber() !== 1) {
-        this.props.history.push('/page/' + arrLength);
+      if (this.pageNumber() > pageCount) {
+        this.props.history.push('/page/' + pageCount);
       }
     }
+  };
+
+  prevDisable() {
+    if (this.pageNumber() <= 1) {
+      return true;
+    }
+    return false;
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    // console.log('nextState: ', nextState);
-    // console.log('nextProps: ', nextProps);.
-    return true;
+  nextDisable() {
+    let taskLength = this.props.todos.length;
+    if (taskLength <= this.pageNumber() * 5) {
+      return true;
+    }
+    return false;
+  }
+
+  componentDidMount() {
+    this.load();
+  }
+
+  componentDidUpdate() {
+    this.load();
   }
 
   render() {
@@ -188,7 +192,9 @@ class TodoList extends Component {
                 pathname: '/page/' + (this.pageNumber() - 1),
                 state: 'TodoList',
               }}
-              className={(styles.taskControl__prevBtn, styles.taskControl__btn)}
+              className={`${styles.taskControl__prevBtn} ${
+                styles.taskControl__btn
+              } ${this.prevDisable() ? styles.disable : ''}`}
             >
               {/* .taskControl--btn */}
               <svg
@@ -206,9 +212,10 @@ class TodoList extends Component {
                 pathname: '/page/' + (this.pageNumber() + 1),
                 state: 'TodoList',
               }}
-              className={(styles.taskControl__nextBtn, styles.taskControl__btn)}
+              className={`${styles.taskControl__nextBtn} ${
+                styles.taskControl__btn
+              } ${this.nextDisable() ? styles.disable : ''}`}
             >
-              {/* styles.taskControl--btn */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
@@ -227,7 +234,6 @@ class TodoList extends Component {
 }
 
 function mapStateToProps(state) {
-  // console.log('state: ', state);
   return {
     todos: state.todo.todos,
     loading: state.todo.loading,
