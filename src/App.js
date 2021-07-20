@@ -1,36 +1,27 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { useLocation } from 'react-router';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
+import { fetchTodos } from './store/actions/todo';
 import TodoEdit from './views/TodoEdit/TodoEdit';
 import TodoList from './views/TodoList/TodoList';
-import Layout from './hoc/layout/Layout';
-import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { fetchTodos } from './store/actions/todo';
 
-class App extends Component {
-  componentDidMount() {
-    this.props.fetchTodos();
-    if (this.props.location.pathname === '/')
-      this.props.history.push('/page/1');
-  }
+export default function App() {
+  const dispatch = useDispatch();
+  let location = useLocation();
+  const history = useHistory();
 
-  render() {
-    return (
-      <Layout>
-        <Switch>
-          <Route path="/" exact component={TodoList} />
-          <Route path="/page/:pageNumber" component={TodoList} />
-          <Route path="/TodoEdit/:id" component={TodoEdit} />
-          <Redirect to="/page/1" />
-        </Switch>
-      </Layout>
-    );
-  }
+  useEffect(() => {
+    dispatch(fetchTodos());
+    if (location.pathname === '/') history.push('/page/1');
+  }, [dispatch]);
+
+  return (
+    <Switch>
+      <Route path="/" exact component={TodoList} />
+      <Route path="/page/:pageNumber" component={TodoList} />
+      <Route path="/TodoEdit/:id" component={TodoEdit} />
+      <Redirect to="/page/1" />
+    </Switch>
+  );
 }
-
-function mapDispatchToProps(dispatch) {
-  return {
-    fetchTodos: () => dispatch(fetchTodos()),
-  };
-}
-
-export default withRouter(connect(null, mapDispatchToProps)(App));

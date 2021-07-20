@@ -70,7 +70,7 @@ class TodoList extends Component {
 
   pageNumber = () => {
     const pageNumber = +this.props.history.location.pathname.split('/')[2];
-    console.log('pageNumber: ', pageNumber);
+    // console.log('pageNumber: ', pageNumber);
     return pageNumber;
   };
 
@@ -255,3 +255,17 @@ function mapDispatchToProps(dispatch) {
 export default withRouter(
   connect(mapStateToProps, mapDispatchToProps)(TodoList)
 );
+
+// export default function TodoList() {
+
+//   const [text, setText] = useState('');
+//   const [error, setError] = useState(false);
+//   const [todos, setTodos] = useState([]);
+//   const {todosData, loadingData} = useSelector(state => state.todo);
+
+//   return (
+//     <div>
+
+//     </div>
+//   )
+// }
