@@ -43,7 +43,7 @@ export function sortingTodos() {
   };
 }
 // create todo
-export function createTodo(item) {
+export function createTodoAction(item) {
   return {
     type: CREATE_TODO,
     item,

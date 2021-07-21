@@ -14,7 +14,7 @@ export default function App() {
   useEffect(() => {
     dispatch(fetchTodos());
     if (location.pathname === '/') history.push('/page/1');
-  }, [dispatch]);
+  }, [dispatch, location, history]);
 
   return (
     <Switch>
