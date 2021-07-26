@@ -1,99 +1,73 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import {
-  fetchTodos,
-  fetchGetItem,
-  fetchEditTodo,
-} from '../../store/actions/todo';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router';
+import { useHistory } from 'react-router-dom';
+import { fetchGetItem, fetchEditTodo } from '../../store/actions/todo';
 import styles from './TodoEdit.module.scss';
 
-class TodoEdit extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: '',
-      error: false,
-      todoId: this.props.location.state.todoId,
-      newText: '',
-    };
+export default function TodoEdit() {
+  const [value, setValue] = useState('');
+  const [error, setError] = useState(false);
+  const dispatch = useDispatch();
+  const history = useHistory();
+  let location = useLocation();
+  const todo = useSelector((state) => state.todo.todo);
 
-    this.handleChange = this.handleChange.bind(this);
-  }
-
-  handleChange(event) {
-    this.setState({ value: event.target.value, error: false });
-  }
-
-  goBack = () => {
-    this.props.history.goBack();
+  const handleChange = (event) => {
+    setValue(event.target.value);
+    setError(false);
   };
 
-  editTodo = () => {
-    if (this.state.value) {
-      const newTodo = this.props.todo;
-      newTodo.text = this.state.value;
-      this.props.fetchEditTodo(newTodo);
-      this.props.history.goBack();
+  const goBack = () => {
+    history.goBack();
+  };
+
+  const editTodo = () => {
+    if (value) {
+      const newTodo = todo;
+      newTodo.text = value;
+      dispatch(fetchEditTodo(newTodo));
+      history.goBack();
     } else {
-      this.setState({ error: true });
+      setError(true);
     }
   };
 
-  componentDidMount() {
-    this.props.fetchGetItem(this.state.todoId);
-  }
+  useEffect(() => {
+    dispatch(fetchGetItem(location.state.todoId));
+    setValue(todo.text);
+  }, [location, dispatch, todo.text]);
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.todo !== this.props.todo) {
-      this.setState({ value: this.props.todo.text });
-    }
-  }
+  useEffect(() => {
+    return () => {
+      setValue('');
+      console.log('компанент удален');
+    };
+  }, []);
 
-  render() {
-    return (
-      <div className={styles.taskEdit}>
-        <div
-          className={`${styles.taskEdit__textOverflow} ${
-            this.state.error ? styles.error : ''
-          }`}
-        >
-          <textarea
-            className={styles.taskEdit__text}
-            placeholder="Enter a title for this card..."
-            value={this.state.value}
-            onChange={this.handleChange}
-          ></textarea>
-        </div>
+  return (
+    <div className={styles.taskEdit}>
+      <div
+        className={`${styles.taskEdit__textOverflow} ${
+          error ? styles.error : ''
+        }`}
+      >
+        <textarea
+          className={styles.taskEdit__text}
+          placeholder="Enter a title for this card..."
+          value={value}
+          onChange={handleChange}
+        ></textarea>
+      </div>
 
-        <div className={styles.taskEdit__buttons}>
-          <button className={styles.btnSave} onClick={this.editTodo}>
-            Save
-          </button>
-          <div className={styles.btnBack} onClick={this.goBack}>
-            Back
-          </div>
+      <div className={styles.taskEdit__buttons}>
+        <button className={styles.btnSave} onClick={editTodo}>
+          Save
+        </button>
+        <div className={styles.btnBack} onClick={goBack}>
+          Back
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
-
-function mapStateToProps(state) {
-  return {
-    todo: state.todo.todo,
-    todos: state.todo.todos,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    fetchTodos: () => dispatch(fetchTodos()),
-    fetchGetItem: (id) => dispatch(fetchGetItem(id)),
-    fetchEditTodo: (newTodo) => dispatch(fetchEditTodo(newTodo)),
-  };
-}
-
-export default withRouter(
-  connect(mapStateToProps, mapDispatchToProps)(TodoEdit)
-);

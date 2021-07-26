@@ -118,6 +118,7 @@ export function fetchGetItem(id) {
     }
   };
 }
+
 export function setItem(todo) {
   return {
     type: SET_TODO,

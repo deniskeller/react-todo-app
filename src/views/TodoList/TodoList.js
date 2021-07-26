@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router';
 import { NavLink, useHistory } from 'react-router-dom';
@@ -58,10 +58,10 @@ export default function TodoList() {
     dispatch(fetchRemoveTodo(id));
   };
 
-  const pageNumber = () => {
+  const pageNumber = useCallback(() => {
     const pageNumber = +location.pathname.split('/')[2];
     return pageNumber;
-  };
+  }, [location.pathname]);
 
   const todosComputed = (pageNumber) => {
     let tasks = todos.slice(0),
@@ -77,7 +77,7 @@ export default function TodoList() {
     return tasks;
   };
 
-  const load = () => {
+  const load = useCallback(() => {
     if (todos.length > 0) {
       const pageCount = Math.ceil(todos.length / 5);
       if (pageNumber() <= 0) {
@@ -87,7 +87,7 @@ export default function TodoList() {
         history.push('/page/' + pageCount);
       }
     }
-  };
+  }, [todos.length, history, pageNumber]);
 
   const prevDisable = () => {
     if (pageNumber() <= 1) {
@@ -106,7 +106,7 @@ export default function TodoList() {
 
   useEffect(() => {
     load();
-  }, [load, dispatch, location, history]);
+  }, [load, dispatch, location, history, todos.length]);
 
   return (
     <div className={styles.taskContent}>
