@@ -61,6 +61,7 @@ export function finishCreateTodo(todo) {
   return async (dispatch) => {
     const response = await Axios.post('/todos.json', todo);
     todo.id = response.data.name;
+    // dispatch(fetchTodos());
   };
 }
 // delete todo

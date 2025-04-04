@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { fetchCompletedTodo } from '../../store/actions/todo';
 import styles from './TodoItem.module.scss';
+import { useNavigate } from 'react-router';
 
-export default function TodoItem(props) {
+const TodoItem = (props) =>{
+  console.log('render TodoItem');
   const [isActive, setIsActive] = useState(false);
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const completedTodo = (todo) => {
@@ -19,7 +20,7 @@ export default function TodoItem(props) {
   };
 
   const editItem = () => {
-    history.push({
+    navigate({
       pathname: '/TodoEdit/' + props.todo.key,
       state: { todoId: props.todo.id },
     });
@@ -51,6 +52,7 @@ export default function TodoItem(props) {
   );
 
   useEffect(() => {
+    console.log('update TodoItem');
     document.addEventListener('click', handleDocumentClick);
     return () => {
       document.removeEventListener('click', handleDocumentClick);
@@ -112,3 +114,6 @@ export default function TodoItem(props) {
     </div>
   );
 }
+
+
+export default TodoItem

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router';
-import { useHistory } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router';
 import { fetchGetItem, fetchEditTodo } from '../../store/actions/todo';
 import styles from './TodoEdit.module.scss';
 
-export default function TodoEdit() {
+const TodoEdit =() =>{
+  console.log(' update TodoEdit');
   const [value, setValue] = useState('');
   const [error, setError] = useState(false);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   let location = useLocation();
   const todo = useSelector((state) => state.todo.todo);
 
@@ -19,7 +19,7 @@ export default function TodoEdit() {
   };
 
   const goBack = () => {
-    history.goBack();
+    navigate.goBack();
   };
 
   const editTodo = () => {
@@ -27,7 +27,7 @@ export default function TodoEdit() {
       const newTodo = todo;
       newTodo.text = value;
       dispatch(fetchEditTodo(newTodo));
-      history.goBack();
+      navigate.goBack();
     } else {
       setError(true);
     }
@@ -71,3 +71,4 @@ export default function TodoEdit() {
     </div>
   );
 }
+export default  TodoEdit

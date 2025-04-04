@@ -1,6 +1,7 @@
 import React from 'react';
 import styles from './Loader.module.scss';
 
-export default function Loader() {
+const Loader =()=> {
   return <div className={styles.Spinner}></div>;
 }
+export default  Loader

@@ -1,7 +1,14 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router';
-import { NavLink, useHistory } from 'react-router-dom';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+// import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router';
+import { NavLink } from 'react-router';
 import {
   createTodoAction,
   finishCreateTodo,
@@ -12,12 +19,16 @@ import styles from './TodoList.module.scss';
 import Loader from '../../components/Loader/Loader';
 import TodoItem from '../../components/TodoItem/TodoItem';
 
-export default function TodoList() {
+const todos = []
+const loading = false
+
+const TodoList = () =>{
+  console.log('render TodoList: ');
   const [text, setText] = useState('');
   const [error, setError] = useState(false);
-  const { todos, loading } = useSelector((state) => state.todo);
-  const dispatch = useDispatch();
-  const history = useHistory();
+  // const { todos, loading } = useSelector((state) => state.todo);
+  // const dispatch = useDispatch();
+  const navigate = useNavigate();
   let location = useLocation();
 
   const createTodo = () => {
@@ -28,14 +39,14 @@ export default function TodoList() {
         done: false,
       };
 
-      dispatch(createTodoAction(todo));
-      dispatch(finishCreateTodo(todo));
+      // dispatch(createTodoAction(todo));
+      // dispatch(finishCreateTodo(todo));
 
       setText('');
       setError(false);
 
       const pageCount = Math.ceil((todos.length + 1) / 5);
-      if (pageCount > 1) history.push('/page/' + pageCount);
+      if (pageCount > 1) navigate('/page/' + pageCount);
     } else {
       setError(true);
     }
@@ -51,11 +62,11 @@ export default function TodoList() {
   };
 
   const sortTodo = () => {
-    dispatch(sortingTodos());
+    // dispatch(sortingTodos());
   };
 
   const onDeleteItem = (id) => {
-    dispatch(fetchRemoveTodo(id));
+    // dispatch(fetchRemoveTodo(id));
   };
 
   const pageNumber = useCallback(() => {
@@ -81,13 +92,13 @@ export default function TodoList() {
     if (todos.length > 0) {
       const pageCount = Math.ceil(todos.length / 5);
       if (pageNumber() <= 0) {
-        history.push('/page/1');
+        navigate('/page/1');
       }
       if (pageNumber() > pageCount) {
-        history.push('/page/' + pageCount);
+        navigate('/page/' + pageCount);
       }
     }
-  }, [todos.length, history, pageNumber]);
+  }, [todos.length, pageNumber, navigate]);
 
   const prevDisable = () => {
     if (pageNumber() <= 1) {
@@ -106,7 +117,9 @@ export default function TodoList() {
 
   useEffect(() => {
     load();
-  }, [load, dispatch, location, history, todos.length]);
+    console.log('update Todolist');
+    console.log(todos.length);
+  }, [todos.length, load]);
 
   return (
     <div className={styles.taskContent}>
@@ -215,3 +228,6 @@ export default function TodoList() {
     </div>
   );
 }
+
+
+export default  TodoList
