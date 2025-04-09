@@ -1,33 +1,17 @@
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { NavLink } from 'react-router';
-import {
-  createTodoAction,
-  finishCreateTodo,
-  fetchRemoveTodo,
-  sortingTodos,
-} from '../../store/actions/todo';
 import styles from './TodoList.module.scss';
 import Loader from '../../components/Loader/Loader';
 import TodoItem from '../../components/TodoItem/TodoItem';
+import { useAppSelector } from '../../hooks/redux';
 
-const todos = []
-const loading = false
+const loading = false;
 
-const TodoList = () =>{
-  console.log('render TodoList: ');
+const TodoList: React.FC = () => {
   const [text, setText] = useState('');
-  const [error, setError] = useState(false);
-  // const { todos, loading } = useSelector((state) => state.todo);
-  // const dispatch = useDispatch();
+  const { items: todos, status, error } = useAppSelector(state => state.todos);
+
   const navigate = useNavigate();
   let location = useLocation();
 
@@ -35,26 +19,23 @@ const TodoList = () =>{
     if (text !== '') {
       const todo = {
         id: Math.random().toString(36).substr(2, 9) + Date.now(),
-        text: text,
-        done: false,
+        title: text,
+        completed: false
       };
 
       // dispatch(createTodoAction(todo));
       // dispatch(finishCreateTodo(todo));
 
       setText('');
-      setError(false);
 
       const pageCount = Math.ceil((todos.length + 1) / 5);
       if (pageCount > 1) navigate('/page/' + pageCount);
     } else {
-      setError(true);
     }
   };
 
-  const changeHandler = (value) => {
+  const changeHandler = (value: string) => {
     setText(value);
-    setError(false);
   };
 
   const clearText = () => {
@@ -65,7 +46,7 @@ const TodoList = () =>{
     // dispatch(sortingTodos());
   };
 
-  const onDeleteItem = (id) => {
+  const onDeleteItem = (id: number) => {
     // dispatch(fetchRemoveTodo(id));
   };
 
@@ -74,22 +55,17 @@ const TodoList = () =>{
     return pageNumber;
   }, [location.pathname]);
 
-  const todosComputed = (pageNumber) => {
-    let tasks = todos.slice(0),
-      index = 1,
-      startIndex = pageNumber * 5,
-      endIndex = startIndex + 5;
+  const todosComputed = (pageNumber: number) => {
+    let tasks = todos.slice(0);
+    const startIndex = pageNumber * 5;
+    const endIndex = startIndex + 5;
 
-    tasks.forEach((task) => {
-      task.key = index;
-      index++;
-    });
     tasks = tasks.slice(startIndex, endIndex);
     return tasks;
   };
 
   const load = useCallback(() => {
-    if (todos.length > 0) {
+    if (todos && todos.length > 0) {
       const pageCount = Math.ceil(todos.length / 5);
       if (pageNumber() <= 0) {
         navigate('/page/1');
@@ -98,7 +74,7 @@ const TodoList = () =>{
         navigate('/page/' + pageCount);
       }
     }
-  }, [todos.length, pageNumber, navigate]);
+  }, [todos, pageNumber, navigate]);
 
   const prevDisable = () => {
     if (pageNumber() <= 1) {
@@ -117,9 +93,7 @@ const TodoList = () =>{
 
   useEffect(() => {
     load();
-    console.log('update Todolist');
-    console.log(todos.length);
-  }, [todos.length, load]);
+  }, [load]);
 
   return (
     <div className={styles.taskContent}>
@@ -137,13 +111,13 @@ const TodoList = () =>{
           }`}
         >
           <textarea
-            type="text"
-            placeholder="Enter a title for this card..."
+            placeholder='Enter a title for this card...'
             className={styles.taskForm__text}
             value={text.trim()}
-            onChange={(event) => changeHandler(event.target.value)}
+            onChange={event => changeHandler(event.target.value)}
           />
         </div>
+
         <div className={styles.taskForm__actions}>
           <button className={styles.taskForm__add} onClick={createTodo}>
             Add card
@@ -152,9 +126,9 @@ const TodoList = () =>{
             <span></span>
           </div>
           <div className={styles.taskForm__options} onClick={sortTodo}>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-              <path d="M9 3L5 6.99h3V14h2V6.99h3L9 3zm7 14.01V10h-2v7.01h-3L15 21l4-3.99h-3z" />
-              <path d="M0 0h24v24H0z" fill="none" />
+            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+              <path d='M9 3L5 6.99h3V14h2V6.99h3L9 3zm7 14.01V10h-2v7.01h-3L15 21l4-3.99h-3z' />
+              <path d='M0 0h24v24H0z' fill='none' />
             </svg>
           </div>
         </div>
@@ -162,19 +136,11 @@ const TodoList = () =>{
 
       {loading ? (
         <Loader />
-      ) : todos.length ? (
+      ) : todos?.length ? (
         <div className={styles.taskList}>
           {todosComputed(pageNumber() - 1).map((todo, index) => {
             return (
-              <TodoItem
-                todo={todo}
-                key={todo.key}
-                text={todo.text}
-                done={todo.done}
-                id={todo.id}
-                index={index}
-                onDeleteItem={onDeleteItem}
-              />
+              <TodoItem todo={todo} key={index} onDeleteItem={onDeleteItem} />
             );
           })}
         </div>
@@ -182,12 +148,12 @@ const TodoList = () =>{
         <div className={styles.taskEmpty}> У вас пока нет задач </div>
       )}
 
-      {todos.length > 5 ? (
+      {todos?.length > 5 ? (
         <div className={styles.taskControl}>
           <NavLink
             to={{
-              pathname: '/page/' + (pageNumber() - 1),
-              state: 'TodoList',
+              pathname: '/page/' + (pageNumber() - 1)
+              // state: 'TodoList'
             }}
             className={`${styles.taskControl__prevBtn} ${
               styles.taskControl__btn
@@ -195,39 +161,38 @@ const TodoList = () =>{
           >
             {/* .taskControl--btn */}
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
+              xmlns='http://www.w3.org/2000/svg'
+              width='24'
+              height='24'
+              viewBox='0 0 24 24'
             >
-              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-              <path d="M0 0h24v24H0z" fill="none" />
+              <path d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z' />
+              <path d='M0 0h24v24H0z' fill='none' />
             </svg>
           </NavLink>
           <NavLink
             to={{
-              pathname: '/page/' + (pageNumber() + 1),
-              state: 'TodoList',
+              pathname: '/page/' + (pageNumber() + 1)
+              // state: 'TodoList'
             }}
             className={`${styles.taskControl__nextBtn} ${
               styles.taskControl__btn
             } ${nextDisable() ? styles.disable : ''}`}
           >
             <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
+              xmlns='http://www.w3.org/2000/svg'
+              width='24'
+              height='24'
+              viewBox='0 0 24 24'
             >
-              <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-              <path d="M0 0h24v24H0z" fill="none" />
+              <path d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z' />
+              <path d='M0 0h24v24H0z' fill='none' />
             </svg>
           </NavLink>
         </div>
       ) : null}
     </div>
   );
-}
+};
 
-
-export default  TodoList
+export default TodoList;

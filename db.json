@@ -1,0 +1,14 @@
+{
+  "todos": [
+    {
+      "id": 1,
+      "title": "Изучить React",
+      "completed": false
+    },
+    {
+      "id": 2,
+      "title": "Изучить Redux Toolkit",
+      "completed": true
+    }
+  ]
+}

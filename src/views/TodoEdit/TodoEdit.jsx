@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
-import { fetchGetItem, fetchEditTodo } from '../../store/actions/todo';
+// import { fetchGetItem, fetchEditTodo } from '../../store/actions/todo';
 import styles from './TodoEdit.module.scss';
 
-const TodoEdit =() =>{
+const TodoEdit = () => {
   console.log(' update TodoEdit');
   const [value, setValue] = useState('');
   const [error, setError] = useState(false);
@@ -26,7 +26,7 @@ const TodoEdit =() =>{
     if (value) {
       const newTodo = todo;
       newTodo.text = value;
-      dispatch(fetchEditTodo(newTodo));
+      // dispatch(fetchEditTodo(newTodo));
       navigate.goBack();
     } else {
       setError(true);
@@ -34,7 +34,7 @@ const TodoEdit =() =>{
   };
 
   useEffect(() => {
-    dispatch(fetchGetItem(location.state.todoId));
+    // dispatch(fetchGetItem(location.state.todoId));
     setValue(todo.text);
   }, [location, dispatch, todo.text]);
 
@@ -70,5 +70,5 @@ const TodoEdit =() =>{
       </div>
     </div>
   );
-}
-export default  TodoEdit
+};
+export default TodoEdit;
