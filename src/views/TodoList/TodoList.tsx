@@ -4,50 +4,43 @@ import { NavLink } from 'react-router';
 import styles from './TodoList.module.scss';
 import Loader from '../../components/Loader/Loader';
 import TodoItem from '../../components/TodoItem/TodoItem';
-import { useAppSelector } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { createTodo } from '../../store/redux-toolkit/todos/todosSlice';
 
 const loading = false;
 
 const TodoList: React.FC = () => {
-  const [text, setText] = useState('');
-  const { items: todos, status, error } = useAppSelector(state => state.todos);
-
   const navigate = useNavigate();
-  let location = useLocation();
+  const location = useLocation();
+  const dispatch = useAppDispatch();
+  const [title, setTitle] = useState<string>('');
+  const [inputError, setInputError] = useState<boolean>(false);
+  const { todos } = useAppSelector((state) => state.todos);
 
-  const createTodo = () => {
-    if (text !== '') {
-      const todo = {
-        id: Math.random().toString(36).substr(2, 9) + Date.now(),
-        title: text,
-        completed: false
-      };
+  // СОЗДАНИЕ НОВОЙ ЗАДАЧЫИ
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
 
-      // dispatch(createTodoAction(todo));
-      // dispatch(finishCreateTodo(todo));
-
-      setText('');
-
+    if (title !== '') {
+      setInputError(false);
+      dispatch(createTodo({ title, completed: false, id: todos.length + 1 }));
+      setTitle('');
+      // добавление пагинации если у нас более 5 задач
       const pageCount = Math.ceil((todos.length + 1) / 5);
       if (pageCount > 1) navigate('/page/' + pageCount);
     } else {
+      setInputError(true);
     }
   };
 
-  const changeHandler = (value: string) => {
-    setText(value);
+  // ОЧИСТКА ПОЛЯ ВВОДА
+  const clearTitle = () => {
+    setTitle('');
   };
 
-  const clearText = () => {
-    setText('');
-  };
-
+  // СОРТИРОВКА СПИСКА ЗАДАЧ
   const sortTodo = () => {
     // dispatch(sortingTodos());
-  };
-
-  const onDeleteItem = (id: number) => {
-    // dispatch(fetchRemoveTodo(id));
   };
 
   const pageNumber = useCallback(() => {
@@ -104,27 +97,29 @@ const TodoList: React.FC = () => {
         </div>
       </div>
 
-      <div className={styles.taskForm}>
+      <form className={styles.taskForm} onSubmit={handleSubmit}>
         <div
           className={`${styles.taskForm__textOverflow} ${
-            error ? styles.error : ''
+            inputError ? styles.error : ''
           }`}
         >
           <textarea
             placeholder='Enter a title for this card...'
             className={styles.taskForm__text}
-            value={text.trim()}
-            onChange={event => changeHandler(event.target.value)}
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
           />
         </div>
 
         <div className={styles.taskForm__actions}>
-          <button className={styles.taskForm__add} onClick={createTodo}>
+          <button className={styles.taskForm__add} type='submit'>
             Add card
           </button>
-          <div className={styles.taskForm__delete} onClick={clearText}>
+
+          <div className={styles.taskForm__delete} onClick={clearTitle}>
             <span></span>
           </div>
+
           <div className={styles.taskForm__options} onClick={sortTodo}>
             <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
               <path d='M9 3L5 6.99h3V14h2V6.99h3L9 3zm7 14.01V10h-2v7.01h-3L15 21l4-3.99h-3z' />
@@ -132,16 +127,14 @@ const TodoList: React.FC = () => {
             </svg>
           </div>
         </div>
-      </div>
+      </form>
 
       {loading ? (
         <Loader />
       ) : todos?.length ? (
         <div className={styles.taskList}>
           {todosComputed(pageNumber() - 1).map((todo, index) => {
-            return (
-              <TodoItem todo={todo} key={index} onDeleteItem={onDeleteItem} />
-            );
+            return <TodoItem todo={todo} key={index} />;
           })}
         </div>
       ) : (

@@ -2,25 +2,25 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './TodoItem.module.scss';
 import { useNavigate } from 'react-router';
 import { Todo } from '../../store/redux-toolkit/todos/types';
+import { useAppDispatch } from '../../hooks/redux';
+import { removeTodo } from '../../store/redux-toolkit/todos/todosSlice';
 
 interface Props {
   todo: Todo;
-  onDeleteItem: (id: number) => void;
 }
 
-const TodoItem: React.FC<Props> = ({ todo, onDeleteItem }) => {
-  console.log('todo: ', todo);
-
-  const [isActive, setIsActive] = useState(false);
+const TodoItem: React.FC<Props> = ({ todo }) => {
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
+  const [isActive, setIsActive] = useState(false);
 
   const completedTodo = (todo: Todo) => {
     // dispatch(fetchCompletedTodo(todo));
   };
 
   const deleteItem = (id: number) => {
-    onDeleteItem(id);
+    console.log('id: ', id);
+    dispatch(removeTodo(id));
     setIsActive(false);
   };
 
@@ -92,7 +92,7 @@ const TodoItem: React.FC<Props> = ({ todo, onDeleteItem }) => {
         </svg>
       </div>
 
-      {isActive ? (
+      {isActive && (
         <div className={styles.taskList__item__menu}>
           <div
             className={styles.taskList__item__menuItem}
@@ -111,7 +111,7 @@ const TodoItem: React.FC<Props> = ({ todo, onDeleteItem }) => {
             Удалить
           </div>
         </div>
-      ) : null}
+      )}
     </div>
   );
 };

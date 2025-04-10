@@ -10,7 +10,7 @@ export const fetchTodos = async (): Promise<Todo[]> => {
   return response.json();
 };
 
-export const addTodo = async (todo: NewTodo): Promise<Todo> => {
+export const addTodo = async (todo: Todo): Promise<Todo> => {
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
@@ -40,8 +40,9 @@ export const updateTodo = async (todo: Todo): Promise<Todo> => {
 
 export const deleteTodo = async (id: number): Promise<void> => {
   const response = await fetch(`${API_URL}/${id}`, {
-    method: 'DELETE',
+		method: 'DELETE',
   });
+	console.log('response: ', response);
   if (!response.ok) {
     throw new Error('Ошибка удаления задачи');
   }
