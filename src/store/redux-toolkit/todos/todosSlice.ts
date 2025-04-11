@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { Todo, NewTodo } from './types';
-import { fetchTodos, addTodo, updateTodo, deleteTodo } from './todosAPI';
+
+const API_URL = 'http://localhost:3001/todos';
 
 interface TodosState {
   todos: Todo[];
@@ -8,36 +9,77 @@ interface TodosState {
   error: string | null;
 }
 
+
+// НАЧАЛЬНОЕ СОСТОЯНИЕ
 const initialState: TodosState = {
   todos: [],
   status: 'idle',
   error: null,
 };
 
-export const loadTodos = createAsyncThunk('todos/loadTodos', async () => {
-  return await fetchTodos();
+// ПЕРВИЧНАЯ ЗАГРУЗКА ЗАДАЧ
+export const loadTodos = createAsyncThunk('todos/loadTodos', async (): Promise<Todo[]> => {
+  const response = await fetch(API_URL);
+  if (!response.ok) {
+    throw new Error('Ошибка загрузки задач');
+  }
+  return response.json();
 });
 
+
+// СОЗДАНИЕ НОВОЙ ЗАДАЧИ
 export const createTodo = createAsyncThunk(
   'todos/createTodo',
-  async (todo: Todo) => {
-    return await addTodo(todo);
+  async (todo: NewTodo): Promise<Todo> => {
+    const response = await fetch(API_URL, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(todo),
+		});
+		if (!response.ok) {
+			throw new Error('Ошибка добавления задачи');
+		}
+		return response.json();
   }
 );
 
+
+// ОБНОВЛЕНИ Е ЗАДАЧИ
 export const toggleTodo = createAsyncThunk(
   'todos/toggleTodo',
-  async (todo: Todo) => {
+  async (todo: Todo): Promise<Todo> => {
     const updatedTodo = { ...todo, completed: !todo.completed };
-    return await updateTodo(updatedTodo);
+
+    const response = await fetch(`${API_URL}/${updatedTodo.id}`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(todo),
+		});
+		if (!response.ok) {
+			throw new Error('Ошибка редактирования задачи');
+		}
+		return response.json();
   }
 );
 
+
+// УДАЛЕНИЕ ЗАДАЧИ
 export const removeTodo = createAsyncThunk(
   'todos/removeTodo',
-  async (id: number) => {
+  async (id: number): Promise<number> => {
 		console.log('id: ', id);
-    await deleteTodo(id);
+    const response = await fetch(`${API_URL}/${id}`, {
+			method: 'DELETE',
+		});
+		console.log('response: ', response);
+		if (!response.ok) {
+			throw new Error('Ошибка удаления задачи');
+		}
+
     return id;
   }
 );

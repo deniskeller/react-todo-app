@@ -16,6 +16,7 @@ const TodoList: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [inputError, setInputError] = useState<boolean>(false);
   const { todos } = useAppSelector((state) => state.todos);
+  console.log('todos: ', todos);
 
   // СОЗДАНИЕ НОВОЙ ЗАДАЧЫИ
   const handleSubmit = (e: React.FormEvent) => {
@@ -23,8 +24,9 @@ const TodoList: React.FC = () => {
 
     if (title !== '') {
       setInputError(false);
-      dispatch(createTodo({ title, completed: false, id: todos.length + 1 }));
+      dispatch(createTodo({ title, completed: false }));
       setTitle('');
+
       // добавление пагинации если у нас более 5 задач
       const pageCount = Math.ceil((todos.length + 1) / 5);
       if (pageCount > 1) navigate('/page/' + pageCount);

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styles from './TodoItem.module.scss';
-import { useNavigate } from 'react-router';
+// import { useNavigate } from 'react-router';
 import { Todo } from '../../store/redux-toolkit/todos/types';
 import { useAppDispatch } from '../../hooks/redux';
 import { removeTodo } from '../../store/redux-toolkit/todos/todosSlice';
@@ -10,7 +10,7 @@ interface Props {
 }
 
 const TodoItem: React.FC<Props> = ({ todo }) => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isActive, setIsActive] = useState(false);
 
