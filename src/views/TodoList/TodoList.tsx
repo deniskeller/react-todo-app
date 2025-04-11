@@ -7,17 +7,14 @@ import TodoItem from '../../components/TodoItem/TodoItem';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { createTodo } from '../../store/redux-toolkit/todos/todosSlice';
 
-const loading = false;
-
 const TodoList: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
   const [title, setTitle] = useState<string>('');
   const [inputError, setInputError] = useState<boolean>(false);
-  const { todos } = useAppSelector((state) => state.todos);
-  console.log('todos: ', todos);
-
+  const { todos, status, error } = useAppSelector((state) => state.todos);
+  const pageCount = Math.ceil(todos.length / 5);
   // СОЗДАНИЕ НОВОЙ ЗАДАЧЫИ
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,48 +25,48 @@ const TodoList: React.FC = () => {
       setTitle('');
 
       // добавление пагинации если у нас более 5 задач
-      const pageCount = Math.ceil((todos.length + 1) / 5);
+
+      console.log('pageCount: ', pageCount);
       if (pageCount > 1) navigate('/page/' + pageCount);
     } else {
       setInputError(true);
     }
   };
-
-  // ОЧИСТКА ПОЛЯ ВВОДА
-  const clearTitle = () => {
-    setTitle('');
-  };
-
   // СОРТИРОВКА СПИСКА ЗАДАЧ
   const sortTodo = () => {
     // dispatch(sortingTodos());
   };
-
+  // ПАГИНАЦИЯ
   const pageNumber = useCallback(() => {
     const pageNumber = +location.pathname.split('/')[2];
     return pageNumber;
   }, [location.pathname]);
 
-  const todosComputed = (pageNumber: number) => {
-    let tasks = todos.slice(0);
-    const startIndex = pageNumber * 5;
-    const endIndex = startIndex + 5;
+  const todosComputed = useCallback(
+    (pageNumber: number) => {
+      let tasks = todos.slice(0);
+      const startIndex = pageNumber * 5;
+      const endIndex = startIndex + 5;
 
-    tasks = tasks.slice(startIndex, endIndex);
-    return tasks;
-  };
+      tasks = tasks.slice(startIndex, endIndex);
+      return tasks;
+    },
+    [todos]
+  );
 
   const load = useCallback(() => {
     if (todos && todos.length > 0) {
-      const pageCount = Math.ceil(todos.length / 5);
+      console.log('pageCount: ', pageCount);
+      console.log('pageNumber(): ', pageNumber());
+
       if (pageNumber() <= 0) {
         navigate('/page/1');
       }
-      if (pageNumber() > pageCount) {
+      if (pageNumber() >= pageCount) {
         navigate('/page/' + pageCount);
       }
     }
-  }, [todos, pageNumber, navigate]);
+  }, [navigate, pageCount, pageNumber, todos]);
 
   const prevDisable = () => {
     if (pageNumber() <= 1) {
@@ -118,7 +115,7 @@ const TodoList: React.FC = () => {
             Add card
           </button>
 
-          <div className={styles.taskForm__delete} onClick={clearTitle}>
+          <div className={styles.taskForm__delete} onClick={() => setTitle('')}>
             <span></span>
           </div>
 
@@ -131,30 +128,38 @@ const TodoList: React.FC = () => {
         </div>
       </form>
 
-      {loading ? (
+      {status === 'loading' ? (
         <Loader />
-      ) : todos?.length ? (
-        <div className={styles.taskList}>
-          {todosComputed(pageNumber() - 1).map((todo, index) => {
-            return <TodoItem todo={todo} key={index} />;
-          })}
-        </div>
-      ) : (
-        <div className={styles.taskEmpty}> У вас пока нет задач </div>
-      )}
+      ) : status === 'succeeded' ? (
+        todos.length > 0 ? (
+          <div className={styles.taskList}>
+            {todosComputed(pageNumber() - 1).map((todo, index) => {
+              return (
+                <TodoItem
+                  todo={todo}
+                  key={todo.id}
+                  index={(pageNumber() - 1) * 5 + index}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <div className={styles.taskEmpty}> У вас пока нет задач </div>
+        )
+      ) : status === 'failed' ? (
+        <div>{error}</div>
+      ) : null}
 
-      {todos?.length > 5 ? (
+      {todos.length > 5 ? (
         <div className={styles.taskControl}>
           <NavLink
             to={{
               pathname: '/page/' + (pageNumber() - 1)
-              // state: 'TodoList'
             }}
             className={`${styles.taskControl__prevBtn} ${
               styles.taskControl__btn
             } ${prevDisable() ? styles.disable : ''}`}
           >
-            {/* .taskControl--btn */}
             <svg
               xmlns='http://www.w3.org/2000/svg'
               width='24'
@@ -165,10 +170,25 @@ const TodoList: React.FC = () => {
               <path d='M0 0h24v24H0z' fill='none' />
             </svg>
           </NavLink>
+
+          {Array.from(
+            { length: Math.ceil(todos.length / 5) },
+            (_, i) => i + 1
+          ).map((number) => (
+            <NavLink
+              key={number}
+              to={`/page/${number}`}
+              className={`pagination-link ${
+                pageNumber() - 1 === number ? 'active' : ''
+              }`}
+            >
+              {number}
+            </NavLink>
+          ))}
+
           <NavLink
             to={{
               pathname: '/page/' + (pageNumber() + 1)
-              // state: 'TodoList'
             }}
             className={`${styles.taskControl__nextBtn} ${
               styles.taskControl__btn

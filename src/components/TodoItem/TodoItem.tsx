@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import styles from './TodoItem.module.scss';
 // import { useNavigate } from 'react-router';
 import { Todo } from '../../store/redux-toolkit/todos/types';
@@ -7,19 +7,19 @@ import { removeTodo } from '../../store/redux-toolkit/todos/todosSlice';
 
 interface Props {
   todo: Todo;
+  index: number;
 }
 
-const TodoItem: React.FC<Props> = ({ todo }) => {
+const TodoItem: React.FC<Props> = ({ todo, index }) => {
   // const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isActive, setIsActive] = useState(false);
-
+  // console.log('TodoItem render');
   const completedTodo = (todo: Todo) => {
     // dispatch(fetchCompletedTodo(todo));
   };
 
   const deleteItem = (id: number) => {
-    console.log('id: ', id);
     dispatch(removeTodo(id));
     setIsActive(false);
   };
@@ -76,7 +76,7 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
   return (
     <div className={computedStyleWrapper()} ref={wrapperRef}>
       <span className={`${todo.completed ? styles.taskList__item__done : ''}`}>
-        {todo.id}) {newTitle(todo.title)}
+        {index + 1}) {newTitle(todo.title)}
       </span>
 
       <div className={styles.taskList__item__edit} onClick={toggleMenu}>
@@ -116,4 +116,4 @@ const TodoItem: React.FC<Props> = ({ todo }) => {
   );
 };
 
-export default TodoItem;
+export default memo(TodoItem);

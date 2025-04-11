@@ -1,0 +1,19 @@
+.taskControl {
+  &__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    height: 30px;
+    width: 30px;
+    border-radius: 3px;
+
+    &:hover {
+      background-color: rgba(9, 30, 66, 0.08);
+    }
+  }
+
+  &__prevBtn {
+    margin-right: 5px;
+  }
+}

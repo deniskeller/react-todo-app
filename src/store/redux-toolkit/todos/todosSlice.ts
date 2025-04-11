@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:3001/todos';
 
 interface TodosState {
   todos: Todo[];
-  status: 'idle' | 'loading' | 'failed';
+  status: 'initial' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 }
 
@@ -13,7 +13,7 @@ interface TodosState {
 // НАЧАЛЬНОЕ СОСТОЯНИЕ
 const initialState: TodosState = {
   todos: [],
-  status: 'idle',
+  status: 'initial',
   error: null,
 };
 
@@ -46,7 +46,7 @@ export const createTodo = createAsyncThunk(
 );
 
 
-// ОБНОВЛЕНИ Е ЗАДАЧИ
+// ОБНОВЛЕНИЕ ЗАДАЧИ
 export const toggleTodo = createAsyncThunk(
   'todos/toggleTodo',
   async (todo: Todo): Promise<Todo> => {
@@ -71,7 +71,6 @@ export const toggleTodo = createAsyncThunk(
 export const removeTodo = createAsyncThunk(
   'todos/removeTodo',
   async (id: number): Promise<number> => {
-		console.log('id: ', id);
     const response = await fetch(`${API_URL}/${id}`, {
 			method: 'DELETE',
 		});
@@ -94,12 +93,13 @@ const todosSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(loadTodos.fulfilled, (state, action) => {
-        state.status = 'idle';
+        state.status = 'succeeded';
         state.todos = action.payload;
       })
       .addCase(loadTodos.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message || 'Ошибка загрузки задач';
+				
       })
       .addCase(createTodo.fulfilled, (state, action) => {
         state.todos.push(action.payload);
