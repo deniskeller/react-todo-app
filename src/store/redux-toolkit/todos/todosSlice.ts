@@ -10,7 +10,6 @@ interface TodosState {
 	sortType: SortType;
 }
 
-
 // НАЧАЛЬНОЕ СОСТОЯНИЕ
 const initialState: TodosState = {
   todos: [],
@@ -27,7 +26,6 @@ export const loadTodos = createAsyncThunk('todos/loadTodos', async (): Promise<T
   }
   return response.json();
 });
-
 
 // СОЗДАНИЕ НОВОЙ ЗАДАЧИ
 export const createTodo = createAsyncThunk(
@@ -47,29 +45,6 @@ export const createTodo = createAsyncThunk(
   }
 );
 
-
-// ОБНОВЛЕНИЕ ЗАДАЧИ
-export const toggleTodo = createAsyncThunk(
-  'todos/toggleTodo',
-  async (todo: Todo): Promise<Todo> => {
-    const updatedTodo = { ...todo, completed: !todo.completed };
-		console.log('updatedTodo: ', updatedTodo);
-
-    const response = await fetch(`${API_URL}/${updatedTodo.id}`, {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(todo),
-		});
-		if (!response.ok) {
-			throw new Error('Ошибка редактирования задачи');
-		}
-		return response.json();
-  }
-);
-
-
 // УДАЛЕНИЕ ЗАДАЧИ
 export const removeTodo = createAsyncThunk(
   'todos/removeTodo',
@@ -85,9 +60,26 @@ export const removeTodo = createAsyncThunk(
   }
 );
 
-export const sortingTodos = () => {
-
-}
+// ОБНОВЛЕНИЕ СТАТУСА ЗАДАЧИ
+export const toggleTodo = createAsyncThunk(
+  'todos/toggleTodo',
+  async (todo: Todo): Promise<Todo> => {
+    const response = await fetch(`${API_URL}/${todo.id}`, {
+			method: 'PATCH',
+      headers: {
+				'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ 
+				completed: !todo.completed
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error('Ошибка редактирования задачи');
+    }
+    return await response.json();
+  }
+);
 
 const todosSlice = createSlice({
   name: 'todos',
@@ -110,7 +102,7 @@ const todosSlice = createSlice({
 					}
 				})
 			};
-		}
+		},
 	},
   extraReducers: (builder) => {
     builder
@@ -123,20 +115,16 @@ const todosSlice = createSlice({
       })
       .addCase(loadTodos.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Ошибка загрузки задач';
-				
+        state.error = action.error.message || 'Ошибка загрузки задач';				
       })
       .addCase(createTodo.fulfilled, (state, action) => {
         state.todos.push(action.payload);
       })
       .addCase(toggleTodo.fulfilled, (state, action) => {
-				state.todos = state.todos.map((todo) => {
-          if (todo.id !== action.payload.id) {
-            return todo;
-          } else {
-            return { ...todo, completed: !action.payload.completed };
-          }
-        })
+				const index = state.todos.findIndex(todo => todo.id === action.payload.id);
+				if (index !== -1) {
+					state.todos[index].completed = !state.todos[index].completed;
+				}
       })
       .addCase(removeTodo.fulfilled, (state, action) => {
         state.todos = state.todos.filter((todo) => todo.id !== action.payload);

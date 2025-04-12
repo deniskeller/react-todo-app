@@ -18,11 +18,14 @@ const TodoItem: React.FC<Props> = ({ todo, index }) => {
   // const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isActive, setIsActive] = useState(false);
+
+  // СМЕНА СТАТУСА ЗАДАЧИ
   const completedTodo = (todo: Todo) => {
     console.log('todo: ', todo);
     dispatch(toggleTodo(todo));
   };
 
+  // УДАЛЕНИЕ ЗАДАЧИ
   const deleteItem = (id: number) => {
     dispatch(removeTodo(id));
     setIsActive(false);
