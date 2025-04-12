@@ -5,3 +5,5 @@ export interface Todo {
 }
 
 export type NewTodo = Omit<Todo, 'id'>;
+
+export type SortType = 'none' | 'completed' | 'active' | 'alphabet';

@@ -3,7 +3,10 @@ import styles from './TodoItem.module.scss';
 // import { useNavigate } from 'react-router';
 import { Todo } from '../../store/redux-toolkit/todos/types';
 import { useAppDispatch } from '../../hooks/redux';
-import { removeTodo } from '../../store/redux-toolkit/todos/todosSlice';
+import {
+  removeTodo,
+  toggleTodo
+} from '../../store/redux-toolkit/todos/todosSlice';
 
 interface Props {
   todo: Todo;
@@ -11,12 +14,13 @@ interface Props {
 }
 
 const TodoItem: React.FC<Props> = ({ todo, index }) => {
+  // console.log('todo: ', todo);
   // const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isActive, setIsActive] = useState(false);
-  // console.log('TodoItem render');
   const completedTodo = (todo: Todo) => {
-    // dispatch(fetchCompletedTodo(todo));
+    console.log('todo: ', todo);
+    dispatch(toggleTodo(todo));
   };
 
   const deleteItem = (id: number) => {
