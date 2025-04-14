@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
-// import { fetchGetItem, fetchEditTodo } from '../../store/actions/todo';
 import styles from './TodoEdit.module.scss';
+import { getItem } from '../../store/redux-toolkit/todos/todosSlice';
 
 const TodoEdit = () => {
   console.log(' update TodoEdit');
@@ -34,7 +34,7 @@ const TodoEdit = () => {
   };
 
   useEffect(() => {
-    // dispatch(fetchGetItem(location.state.todoId));
+    dispatch(getItem(location.state.todoId));
     setValue(todo.text);
   }, [location, dispatch, todo.text]);
 
@@ -54,7 +54,7 @@ const TodoEdit = () => {
       >
         <textarea
           className={styles.taskEdit__text}
-          placeholder="Enter a title for this card..."
+          placeholder='Enter a title for this card...'
           value={value}
           onChange={handleChange}
         ></textarea>

@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import styles from './TodoItem.module.scss';
-// import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router';
 import { Todo } from '../../store/redux-toolkit/todos/types';
 import { useAppDispatch } from '../../hooks/redux';
 import {
@@ -14,14 +14,12 @@ interface Props {
 }
 
 const TodoItem: React.FC<Props> = ({ todo, index }) => {
-  // console.log('todo: ', todo);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isActive, setIsActive] = useState(false);
 
   // СМЕНА СТАТУСА ЗАДАЧИ
   const completedTodo = (todo: Todo) => {
-    console.log('todo: ', todo);
     dispatch(toggleTodo(todo));
   };
 
@@ -32,10 +30,9 @@ const TodoItem: React.FC<Props> = ({ todo, index }) => {
   };
 
   const editItem = () => {
-    // navigate({
-    //   pathname: '/TodoEdit/' + todo.id,
-    //   state: { todoId: todo.id }
-    // });
+    navigate({
+      pathname: '/TodoEdit/' + todo.id
+    });
   };
 
   const doneText = (done: boolean) => {

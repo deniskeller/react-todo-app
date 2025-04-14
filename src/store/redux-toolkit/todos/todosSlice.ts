@@ -81,6 +81,22 @@ export const toggleTodo = createAsyncThunk(
   }
 );
 
+// ПОЛУЧЕНИЕ ТЕКУЩЕЙ ЗАДАЧИ
+export const getItem = createAsyncThunk(
+	'todos/getItem',
+	async (todo: Todo): Promise<Todo> => {
+  const response = await fetch(`${API_URL}/${todo.id}`, {
+		method: 'POST',
+	});
+
+	console.log('response: ', response);
+	
+  if (!response.ok) {
+    throw new Error('Ошибка загрузки задач');
+  }
+  return response.json();
+});
+
 const todosSlice = createSlice({
   name: 'todos',
   initialState,
@@ -115,7 +131,7 @@ const todosSlice = createSlice({
       })
       .addCase(loadTodos.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.error.message || 'Ошибка загрузки задач';				
+        state.error = action.error.message || 'Ошибка загрузки задач';		
       })
       .addCase(createTodo.fulfilled, (state, action) => {
         state.todos.push(action.payload);

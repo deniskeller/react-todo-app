@@ -21,8 +21,50 @@ const TodoList: React.FC = () => {
 
   const ITEMS_PER_PAGE = 5;
   const pageCount = Math.ceil(todos.length / ITEMS_PER_PAGE);
+
   const { pageNumber = '1' } = useParams();
   const currentPage = parseInt(pageNumber, 10) || 1;
+
+  // СОЗДАНИЕ НОВОЙ ЗАДАЧИ
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (title !== '') {
+      setInputError(false);
+      dispatch(createTodo({ title, completed: false }));
+      setTitle('');
+
+      const pageCount = Math.ceil((todos.length + 1) / 5);
+      if (pageCount > 1) navigate(`/page/${pageCount}`);
+    } else {
+      setInputError(true);
+    }
+  };
+
+  // ПАГИНАЦИЯ
+  // useEffect(() => {
+  //   if (currentPage > pageCount && pageCount > 0) {
+  //     navigate(`/page/${pageCount}`);
+  //   }
+  // }, [currentPage, navigate, pageCount]);
+
+  // расчет задач для постраничного вывода
+  const paginatedTodos = todos.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+  // кнопки управления смены страниц
+  const prevDisable = currentPage <= 1;
+  const nextDisable = currentPage >= pageCount;
+
+  useEffect(() => {
+    if (!todos.length) return;
+
+    if (currentPage <= 0) {
+      navigate('/page/1');
+    } else if (currentPage > pageCount) {
+      navigate(`/page/${pageCount}`);
+    }
+  }, [todos.length, pageCount, currentPage, navigate]);
 
   // СОРТИРОВКА СПИСКА ЗАДАЧ
   const sortedTodos = useMemo(() => {
@@ -51,37 +93,6 @@ const TodoList: React.FC = () => {
     setSortType(sortOrder[nextIndex]);
     dispatch(sortTodos(sortOrder[nextIndex]));
   };
-
-  // СОЗДАНИЕ НОВОЙ ЗАДАЧИ
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (title !== '') {
-      setInputError(false);
-      dispatch(createTodo({ title, completed: false }));
-      setTitle('');
-
-      const pageCount = Math.ceil((todos.length + 1) / 5);
-      if (pageCount > 1) navigate(`/page/${pageCount}`);
-    } else {
-      setInputError(true);
-    }
-  };
-
-  // ПАГИНАЦИЯ
-  useEffect(() => {
-    if (currentPage > pageCount && pageCount > 0) {
-      navigate(`/page/${pageCount}`);
-    }
-  }, [currentPage, navigate, pageCount]);
-
-  // расчет задач для постраничного вывода
-  const paginatedTodos = todos.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-  // кнопки управления смены страниц
-  const prevDisable = currentPage <= 1;
-  const nextDisable = currentPage >= pageCount;
 
   return (
     <div className={styles.taskContent}>
