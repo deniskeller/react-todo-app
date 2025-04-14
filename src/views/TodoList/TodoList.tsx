@@ -18,10 +18,8 @@ const TodoList: React.FC = () => {
   const [inputError, setInputError] = useState<boolean>(false);
   const { todos, status, error } = useAppSelector((state) => state.todos);
   const [sortType, setSortType] = useState<SortType>('none');
-
   const ITEMS_PER_PAGE = 5;
   const pageCount = Math.ceil(todos.length / ITEMS_PER_PAGE);
-
   const { pageNumber = '1' } = useParams();
   const currentPage = parseInt(pageNumber, 10) || 1;
 
@@ -32,8 +30,7 @@ const TodoList: React.FC = () => {
       setInputError(false);
       dispatch(createTodo({ title, completed: false }));
       setTitle('');
-
-      const pageCount = Math.ceil((todos.length + 1) / 5);
+      const pageCount = Math.ceil((todos.length + 1) / ITEMS_PER_PAGE);
       if (pageCount > 1) navigate(`/page/${pageCount}`);
     } else {
       setInputError(true);
@@ -41,12 +38,6 @@ const TodoList: React.FC = () => {
   };
 
   // ПАГИНАЦИЯ
-  // useEffect(() => {
-  //   if (currentPage > pageCount && pageCount > 0) {
-  //     navigate(`/page/${pageCount}`);
-  //   }
-  // }, [currentPage, navigate, pageCount]);
-
   // расчет задач для постраничного вывода
   const paginatedTodos = todos.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -55,15 +46,27 @@ const TodoList: React.FC = () => {
   // кнопки управления смены страниц
   const prevDisable = currentPage <= 1;
   const nextDisable = currentPage >= pageCount;
+  // проверка на несуществующие страницы
+  useEffect(() => {
+    if (!todos.length) return;
+    if (+pageNumber <= 0) navigate('/page/1');
+    if (+pageNumber > pageCount) navigate('/page/' + pageCount);
+  }, [navigate, pageCount, pageNumber, todos.length]);
+
+  // useEffect(() => {
+  //   if (currentPage > pageCount && pageCount > 0) {
+  //     navigate(`/page/${pageCount}`);
+  //   }
+  // }, [currentPage, navigate, pageCount]);
 
   useEffect(() => {
     if (!todos.length) return;
 
-    if (currentPage <= 0) {
-      navigate('/page/1');
-    } else if (currentPage > pageCount) {
-      navigate(`/page/${pageCount}`);
-    }
+    // if (currentPage > pageCount && pageCount > 0) {
+    //   navigate(`/page/${pageCount}`);
+    // } else if (currentPage <= 0) {
+    //   navigate('/page/1');
+    // }
   }, [todos.length, pageCount, currentPage, navigate]);
 
   // СОРТИРОВКА СПИСКА ЗАДАЧ
