@@ -6,8 +6,8 @@ interface Props {
   todo: Todo;
   index: number;
   onToggle: (todo: Todo) => void;
-  onDelete: (id: number) => void;
-  onEdit: (id: number) => void;
+  onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
 }
 
 const TodoItem: React.FC<Props> = ({

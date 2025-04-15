@@ -50,7 +50,7 @@ export const createTodo = createAsyncThunk(
 // УДАЛЕНИЕ ЗАДАЧИ
 export const deleteTodo = createAsyncThunk(
   'todos/deleteTodo',
-  async (id: number): Promise<number> => {
+  async (id: string): Promise<string> => {
     const response = await fetch(`${API_URL}/${id}`, {
 			method: 'DELETE',
 		});
@@ -60,21 +60,20 @@ export const deleteTodo = createAsyncThunk(
 );
 
 // ОБНОВЛЕНИЕ СТАТУСА ЗАДАЧИ
-export const toggleTodo = createAsyncThunk(
-  'todos/toggleTodo',
+export const updateTodo = createAsyncThunk(
+  'todos/updateTodo',
   async (todo: Todo): Promise<Todo> => {
     const response = await fetch(`${API_URL}/${todo.id}`, {
 			method: 'PATCH',
       headers: {
 				'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 
-				completed: !todo.completed
-      }),
+			body: JSON.stringify(todo),
     });
 		return handleFetchError(response, 'Ошибка редактирования задачи');
   }
 );
+
 const todosSlice = createSlice({
   name: 'todos',
   initialState,
@@ -97,10 +96,6 @@ const todosSlice = createSlice({
 				})
 			};
 		},
-		getCurrentTodo(state, action: PayloadAction<Exclude<Todo, 'id'>>) {
-			console.log('action: ', action);
-
-		}
 	},
   extraReducers: (builder) => {
     builder
@@ -118,10 +113,10 @@ const todosSlice = createSlice({
       .addCase(createTodo.fulfilled, (state, action) => {		
 				state.todos.push(action.payload);
       })
-      .addCase(toggleTodo.fulfilled, (state, action) => {
-				const index = state.todos.findIndex(todo => todo.id === action.payload.id);
+      .addCase(updateTodo.fulfilled, (state, action) => {
+				const index = state.todos.findIndex(t => t.id === action.payload.id);
 				if (index !== -1) {
-					state.todos[index].completed = !state.todos[index].completed;
+					state.todos[index] = action.payload;
 				}
       })
       .addCase(deleteTodo.fulfilled, (state, action) => {
@@ -130,5 +125,5 @@ const todosSlice = createSlice({
   },
 });
 
-export const { sortTodos, getCurrentTodo } = todosSlice.actions;
+export const { sortTodos } = todosSlice.actions;
 export default todosSlice.reducer;

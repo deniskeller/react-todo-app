@@ -1,50 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import styles from './TodoEdit.module.scss';
-// import { getCurrentTodo } from '../../store/redux-toolkit/todos/todosSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { updateTodo } from '../../store/redux-toolkit/todos/todosSlice';
 
 const TodoEdit: React.FC = () => {
-  const [value, setValue] = useState('');
+  const [todoTitle, setTodoTitle] = useState<string>('');
   const [error, setError] = useState(false);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const { todos } = useAppSelector((state) => state.todos);
 
-  const handleChange = (e: any) => {
-    setValue(e.target.value);
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTodoTitle(e.target.value);
     setError(false);
   };
 
-  const goBack = () => {
-    navigate(-1);
-  };
-
-  const editTodo = () => {
-    // if (value) {
-    //   const newTodo = todo;
-    //   newTodo.text = value;
-    //   // dispatch(fetchEditTodo(newTodo));
-    //   navigate.goBack();
-    // } else {
-    //   setError(true);
-    // }
+  const handleEditTodo = () => {
+    if (todoTitle !== '') {
+      const currentTodoId = location.pathname.split('/')[2];
+      const currentTodo = todos.find((t) => t.id === currentTodoId);
+      if (currentTodo) {
+        dispatch(updateTodo({ ...currentTodo, title: todoTitle }));
+      }
+      navigate(-1);
+    } else {
+      setError(true);
+    }
   };
 
   useEffect(() => {
-    // dispatch(getCurrentTodo(location.pathname));
-    console.log('todos: ', todos);
-    console.log('location.pathname: ', location.pathname);
-    // setValue(todo.text);
-  }, [dispatch, location.pathname, todos]);
-
-  useEffect(() => {
-    return () => {
-      setValue('');
-      console.log('компонент удален');
-    };
-  }, []);
+    const currentTodoId = location.pathname.split('/')[2];
+    const currentTodo = todos.find((t) => t.id === currentTodoId);
+    if (currentTodo) {
+      setTodoTitle(currentTodo.title);
+    }
+  }, [location.pathname, todos]);
 
   return (
     <div className={styles.taskEdit}>
@@ -56,16 +48,17 @@ const TodoEdit: React.FC = () => {
         <textarea
           className={styles.taskEdit__text}
           placeholder='Введите текст задачи...'
-          value={value}
+          value={todoTitle}
           onChange={handleChange}
         ></textarea>
       </div>
 
       <div className={styles.taskEdit__buttons}>
-        <button className={styles.btnSave} onClick={editTodo}>
+        <button className={styles.btnSave} onClick={handleEditTodo}>
           Save
         </button>
-        <div className={styles.btnBack} onClick={goBack}>
+
+        <div className={styles.btnBack} onClick={() => navigate(-1)}>
           Back
         </div>
       </div>

@@ -9,7 +9,7 @@ import {
   createTodo,
   deleteTodo,
   sortTodos,
-  toggleTodo
+  updateTodo
 } from '../../store/redux-toolkit/todos/todosSlice';
 import { SortType, Todo } from '../../store/redux-toolkit/todos/types';
 
@@ -45,16 +45,16 @@ const TodoList: React.FC = () => {
 
   // ---------- СМЕНА СТАТУСА ЗАДАЧИ
   const handleToggleTodo = (todo: Todo) => {
-    dispatch(toggleTodo(todo));
+    dispatch(updateTodo({ ...todo, completed: !todo.completed }));
   };
 
   // ---------- УДАЛЕНИЕ ЗАДАЧИ
-  const handleDeleteTodo = (id: number) => {
+  const handleDeleteTodo = (id: string) => {
     dispatch(deleteTodo(id));
   };
 
   // ---------- РЕДАКТИРОВАНИЕ ЗАДАЧИ
-  const handleEditTodo = (id: number) => {
+  const handleEditTodo = (id: string) => {
     navigate('/TodoEdit/' + id);
   };
 
