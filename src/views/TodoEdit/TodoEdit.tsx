@@ -4,7 +4,7 @@ import styles from './TodoEdit.module.scss';
 // import { getCurrentTodo } from '../../store/redux-toolkit/todos/todosSlice';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 
-const TodoEdit = () => {
+const TodoEdit: React.FC = () => {
   const [value, setValue] = useState('');
   const [error, setError] = useState(false);
   const dispatch = useAppDispatch();
@@ -39,12 +39,12 @@ const TodoEdit = () => {
     // setValue(todo.text);
   }, [dispatch, location.pathname, todos]);
 
-  // useEffect(() => {
-  //   return () => {
-  //     setValue('');
-  //     console.log('компанент удален');
-  //   };
-  // }, []);
+  useEffect(() => {
+    return () => {
+      setValue('');
+      console.log('компонент удален');
+    };
+  }, []);
 
   return (
     <div className={styles.taskEdit}>
