@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { NavLink } from 'react-router';
 import styles from './TodoList.module.scss';
@@ -7,9 +7,11 @@ import TodoItem from '../../components/TodoItem/TodoItem';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
   createTodo,
-  sortTodos
+  deleteTodo,
+  sortTodos,
+  toggleTodo
 } from '../../store/redux-toolkit/todos/todosSlice';
-import { SortType } from '../../store/redux-toolkit/todos/types';
+import { SortType, Todo } from '../../store/redux-toolkit/todos/types';
 
 const TodoList: React.FC = () => {
   const navigate = useNavigate();
@@ -23,29 +25,48 @@ const TodoList: React.FC = () => {
   const { pageNumber = '1' } = useParams();
   const currentPage = parseInt(pageNumber, 10) || 1;
 
-  // СОЗДАНИЕ НОВОЙ ЗАДАЧИ
-  const handleSubmit = (e: React.FormEvent) => {
+  // ---------- СОЗДАНИЕ НОВОЙ ЗАДАЧИ
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (title !== '') {
-      setInputError(false);
-      dispatch(createTodo({ title, completed: false }));
-      setTitle('');
-      const pageCount = Math.ceil((todos.length + 1) / ITEMS_PER_PAGE);
-      if (pageCount > 1) navigate(`/page/${pageCount}`);
+      try {
+        setInputError(false);
+        await dispatch(createTodo({ title, completed: false }));
+        setTitle('');
+        const pageCount = Math.ceil((todos.length + 1) / ITEMS_PER_PAGE);
+        if (pageCount > 1) navigate(`/page/${pageCount}`);
+      } catch (error) {
+        console.log('error: ', error);
+      }
     } else {
       setInputError(true);
     }
   };
 
-  // ПАГИНАЦИЯ
+  // ---------- СМЕНА СТАТУСА ЗАДАЧИ
+  const handleToggleTodo = (todo: Todo) => {
+    dispatch(toggleTodo(todo));
+  };
+
+  // ---------- УДАЛЕНИЕ ЗАДАЧИ
+  const handleDeleteTodo = (id: number) => {
+    dispatch(deleteTodo(id));
+  };
+
+  // ---------- РЕДАКТИРОВАНИЕ ЗАДАЧИ
+  const handleEditTodo = (id: number) => {
+    navigate('/TodoEdit/' + id);
+  };
+
+  // ---------- ПАГИНАЦИЯ
   // расчет задач для постраничного вывода
   const paginatedTodos = todos.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
   // кнопки управления смены страниц
-  const prevDisable = currentPage <= 1;
-  const nextDisable = currentPage >= pageCount;
+  const prevDisabled = currentPage <= 1;
+  const nextDisabled = currentPage >= pageCount;
   // проверка на несуществующие страницы
   useEffect(() => {
     if (!todos.length) return;
@@ -53,44 +74,14 @@ const TodoList: React.FC = () => {
     if (+pageNumber > pageCount) navigate('/page/' + pageCount);
   }, [navigate, pageCount, pageNumber, todos.length]);
 
-  // useEffect(() => {
-  //   if (currentPage > pageCount && pageCount > 0) {
-  //     navigate(`/page/${pageCount}`);
-  //   }
-  // }, [currentPage, navigate, pageCount]);
-
-  useEffect(() => {
-    if (!todos.length) return;
-
-    // if (currentPage > pageCount && pageCount > 0) {
-    //   navigate(`/page/${pageCount}`);
-    // } else if (currentPage <= 0) {
-    //   navigate('/page/1');
-    // }
-  }, [todos.length, pageCount, currentPage, navigate]);
-
-  // СОРТИРОВКА СПИСКА ЗАДАЧ
-  const sortedTodos = useMemo(() => {
-    const todosCopy = [...todos];
-
-    switch (sortType) {
-      case 'completed':
-        return todosCopy.sort(
-          (a, b) => Number(b.completed) - Number(a.completed)
-        );
-      case 'active':
-        return todosCopy.sort(
-          (a, b) => Number(a.completed) - Number(b.completed)
-        );
-      case 'alphabet':
-        return todosCopy.sort((a, b) => a.title.localeCompare(b.title));
-      default:
-        return todosCopy;
-    }
-  }, [todos, sortType]);
-
+  // ---------- СОРТИРОВКА СПИСКА ЗАДАЧ
   const handleSort = () => {
-    const sortOrder: SortType[] = ['none', 'completed', 'active', 'alphabet'];
+    const sortOrder: SortType[] = [
+      'none',
+      'завершенные',
+      'активные',
+      'по алфивиту'
+    ];
     const currentIndex = sortOrder.indexOf(sortType);
     const nextIndex = (currentIndex + 1) % sortOrder.length;
     setSortType(sortOrder[nextIndex]);
@@ -113,7 +104,7 @@ const TodoList: React.FC = () => {
           }`}
         >
           <textarea
-            placeholder='Enter a title for this card...'
+            placeholder='Введите текст задачи...'
             className={styles.taskForm__text}
             value={title}
             onChange={(event) => setTitle(event.target.value)}
@@ -147,12 +138,13 @@ const TodoList: React.FC = () => {
       {/* Индикатор текущей сортировки */}
       {sortType !== 'none' && (
         <div className={styles.sortIndicator}>
-          Sorted by: {sortType}
+          Сортировка задач: {sortType}
           <button
             onClick={() => setSortType('none')}
             className={styles.clearSort}
+            style={{ cursor: 'pointer' }}
           >
-            (clear)
+            (Сбросить)
           </button>
         </div>
       )}
@@ -161,13 +153,16 @@ const TodoList: React.FC = () => {
       {status === 'failed' && <div>{error}</div>}
       {status === 'succeeded' && (
         <>
-          {sortedTodos.length > 0 ? (
+          {todos.length > 0 ? (
             <div className={styles.taskList}>
               {paginatedTodos.map((todo, index) => (
                 <TodoItem
                   key={todo.id}
                   todo={todo}
                   index={(currentPage - 1) * ITEMS_PER_PAGE + index}
+                  onToggle={handleToggleTodo}
+                  onDelete={handleDeleteTodo}
+                  onEdit={handleEditTodo}
                 />
               ))}
             </div>
@@ -185,7 +180,7 @@ const TodoList: React.FC = () => {
             }}
             className={`${styles.taskControl__prevBtn} ${
               styles.taskControl__btn
-            } ${prevDisable ? styles.disable : ''}`}
+            } ${prevDisabled ? styles.disable : ''}`}
           >
             <svg
               xmlns='http://www.w3.org/2000/svg'
@@ -219,7 +214,7 @@ const TodoList: React.FC = () => {
             }}
             className={`${styles.taskControl__nextBtn} ${
               styles.taskControl__btn
-            } ${nextDisable ? styles.disable : ''}`}
+            } ${nextDisabled ? styles.disable : ''}`}
           >
             <svg
               xmlns='http://www.w3.org/2000/svg'

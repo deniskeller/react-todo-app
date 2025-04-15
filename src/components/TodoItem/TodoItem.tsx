@@ -1,46 +1,23 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
 import styles from './TodoItem.module.scss';
-import { useNavigate } from 'react-router';
 import { Todo } from '../../store/redux-toolkit/todos/types';
-import { useAppDispatch } from '../../hooks/redux';
-import {
-  removeTodo,
-  toggleTodo
-} from '../../store/redux-toolkit/todos/todosSlice';
 
 interface Props {
   todo: Todo;
   index: number;
+  onToggle: (todo: Todo) => void;
+  onDelete: (id: number) => void;
+  onEdit: (id: number) => void;
 }
 
-const TodoItem: React.FC<Props> = ({ todo, index }) => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+const TodoItem: React.FC<Props> = ({
+  todo,
+  index,
+  onToggle,
+  onDelete,
+  onEdit
+}) => {
   const [isActive, setIsActive] = useState(false);
-
-  // СМЕНА СТАТУСА ЗАДАЧИ
-  const completedTodo = (todo: Todo) => {
-    dispatch(toggleTodo(todo));
-  };
-
-  // УДАЛЕНИЕ ЗАДАЧИ
-  const deleteItem = (id: number) => {
-    dispatch(removeTodo(id));
-    setIsActive(false);
-  };
-
-  const editItem = () => {
-    navigate({
-      pathname: '/TodoEdit/' + todo.id
-    });
-  };
-
-  const doneText = (done: boolean) => {
-    if (done) {
-      return 'Не выполнено';
-    }
-    return 'Выполнено';
-  };
 
   const newTitle = (text: string) => {
     if (text.length > 30) {
@@ -100,16 +77,22 @@ const TodoItem: React.FC<Props> = ({ todo, index }) => {
         <div className={styles.taskList__item__menu}>
           <div
             className={styles.taskList__item__menuItem}
-            onClick={() => completedTodo(todo)}
+            onClick={() => onToggle(todo)}
           >
-            {doneText(todo.completed)}
+            {todo.completed ? 'Не выполнено' : 'Выполнено'}
           </div>
 
-          <div className={styles.taskList__item__menuItem} onClick={editItem}>
+          <div
+            className={styles.taskList__item__menuItem}
+            onClick={() => onEdit(todo.id)}
+          >
             Редактировать
           </div>
           <div
-            onClick={() => deleteItem(todo.id)}
+            onClick={() => {
+              onDelete(todo.id);
+              setIsActive(false);
+            }}
             className={styles.taskList__item__menuItem}
           >
             Удалить

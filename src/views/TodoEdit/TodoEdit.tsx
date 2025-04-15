@@ -1,49 +1,50 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation, useNavigate } from 'react-router';
 import styles from './TodoEdit.module.scss';
-import { getItem } from '../../store/redux-toolkit/todos/todosSlice';
+// import { getCurrentTodo } from '../../store/redux-toolkit/todos/todosSlice';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 
 const TodoEdit = () => {
-  console.log(' update TodoEdit');
   const [value, setValue] = useState('');
   const [error, setError] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  let location = useLocation();
-  const todo = useSelector((state) => state.todo.todo);
+  const location = useLocation();
+  const { todos } = useAppSelector((state) => state.todos);
 
-  const handleChange = (event) => {
-    setValue(event.target.value);
+  const handleChange = (e: any) => {
+    setValue(e.target.value);
     setError(false);
   };
 
   const goBack = () => {
-    navigate.goBack();
+    navigate(-1);
   };
 
   const editTodo = () => {
-    if (value) {
-      const newTodo = todo;
-      newTodo.text = value;
-      // dispatch(fetchEditTodo(newTodo));
-      navigate.goBack();
-    } else {
-      setError(true);
-    }
+    // if (value) {
+    //   const newTodo = todo;
+    //   newTodo.text = value;
+    //   // dispatch(fetchEditTodo(newTodo));
+    //   navigate.goBack();
+    // } else {
+    //   setError(true);
+    // }
   };
 
   useEffect(() => {
-    dispatch(getItem(location.state.todoId));
-    setValue(todo.text);
-  }, [location, dispatch, todo.text]);
+    // dispatch(getCurrentTodo(location.pathname));
+    console.log('todos: ', todos);
+    console.log('location.pathname: ', location.pathname);
+    // setValue(todo.text);
+  }, [dispatch, location.pathname, todos]);
 
-  useEffect(() => {
-    return () => {
-      setValue('');
-      console.log('компанент удален');
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     setValue('');
+  //     console.log('компанент удален');
+  //   };
+  // }, []);
 
   return (
     <div className={styles.taskEdit}>
@@ -54,7 +55,7 @@ const TodoEdit = () => {
       >
         <textarea
           className={styles.taskEdit__text}
-          placeholder='Enter a title for this card...'
+          placeholder='Введите текст задачи...'
           value={value}
           onChange={handleChange}
         ></textarea>

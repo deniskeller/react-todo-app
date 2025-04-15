@@ -14,15 +14,12 @@ const App: React.FC = () => {
   const { status } = useAppSelector((state) => state.todos);
 
   useEffect(() => {
-    if (status === 'initial') {
-      dispatch(loadTodos());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch]);
+    if (status === 'initial') dispatch(loadTodos());
+  }, [dispatch, status]);
 
   useEffect(() => {
     if (location.pathname === '/') navigate('/page/1');
-  }, [location, navigate]);
+  }, [location.pathname, navigate]);
 
   return (
     <Routes>
