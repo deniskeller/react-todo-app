@@ -12,6 +12,4 @@ React.js и его экосистема + typescript. В качестве store 
 
 Приложение работает на: http://localhost:3000/page/1
 
-### demo
-
 вариант деплоя на firebase хостинг(старый вариант приложения без пагинации и типов сортировки): https://react-todo-app-e42cf.web.app/page/1
