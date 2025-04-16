@@ -8,7 +8,7 @@ React.js и его экосистема + typescript. В качестве store 
 
 ### Запуск приложения
 
-1. Соберите и запустите контейнер: docker-compose up --build.
+1. Соберите и запустите контейнер: docker-compose up --build
 2. Приложение работает на: http://localhost:3000/page/1
 
 ### Деплой
