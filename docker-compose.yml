@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: .
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/app
+      - /app/node_modules # Это предотвращает перезапись node_modules из хоста
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Для работы hot-reload в Docker
+      - WDS_SOCKET_PORT=3000
+    stdin_open: true # Необходимо для Create React App
+    tty: true # Необходимо для Create React App
+  server:
+    image: node:18-alpine
+    working_dir: /app
+    command: npm run server
+    ports:
+      - '3001:3001'
+    volumes:
+      - ./:/app
+    depends_on:
+      - frontend

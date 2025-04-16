@@ -1,26 +1,19 @@
-FROM node:14
+# Dockerfile
+FROM node:18-alpine
 
-# Устанавливаем системные зависимости
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем package.json и package-lock.json
+# Копируем package.json и package-lock.json для установки зависимостей
 COPY package*.json ./
 
-# Очищаем кэш и устанавливаем зависимости
-RUN npm cache clean --force && npm install
+# Устанавливаем зависимости
+RUN npm install
 
 # Копируем остальные файлы проекта
 COPY . .
 
-# Открываем порт
+# Порт, который будет использоваться приложением
 EXPOSE 3000
 
 # Команда для запуска приложения
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]
