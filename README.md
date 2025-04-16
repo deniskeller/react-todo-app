@@ -8,8 +8,9 @@ React.js и его экосистема + typescript. В качестве store 
 
 ### Запуск приложения
 
-Соберите и запустите контейнер: docker-compose up --build
-
+Соберите и запустите контейнер: docker-compose up --build .
 Приложение работает на: http://localhost:3000/page/1
 
-вариант деплоя на firebase хостинг(старый вариант приложения без пагинации и типов сортировки): https://react-todo-app-e42cf.web.app/page/1
+### Деплой
+
+Вариант деплоя на firebase хостинг(старый вариант приложения без пагинации и типов сортировки): https://react-todo-app-e42cf.web.app/page/1
