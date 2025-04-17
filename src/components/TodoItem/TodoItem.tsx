@@ -1,5 +1,6 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
+import React, { memo, useRef, useState } from 'react';
 import { Todo } from '../../store/redux-toolkit/todos/types';
+import useOnClickOutside from '../../hooks/useOnClickOutside';
 
 interface Props {
   todo: Todo;
@@ -20,35 +21,28 @@ const TodoItem: React.FC<Props> = ({
   const handleToggleMenu = () => {
     setIsActive(!isActive);
   };
+
+  const todoRef = useRef<HTMLDivElement>(null);
+  const clickOutsideHandler = () => {
+    setIsActive(false);
+  };
+  useOnClickOutside(todoRef, clickOutsideHandler);
+
   // ОБРЕЗКА ТЕКСТА ЕСЛИ НЕ ВМЕЩАЕТСЯ
-  const newTitle = (text: string) => {
+  const computedSizeTitle = (text: string) => {
     if (text.length > 30) return (text = text.slice(0, 30) + '...');
     return text;
   };
 
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  const handleDocumentClick = useCallback((e: any) => {
-    if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-      setIsActive(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    document.addEventListener('click', handleDocumentClick);
-    return () => {
-      document.removeEventListener('click', handleDocumentClick);
-    };
-  }, [handleDocumentClick]);
-
   return (
     <div
-      ref={wrapperRef}
+      ref={todoRef}
       className={`group bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] flex items-center mb-2 w-full min-h-[50px] py-[3px] pr-[45px] pl-[15px] relative no-underline hover:bg-[rgba(176,203,247,0.2)] ${
         isActive ? '!bg-[rgba(176,203,247,0.2)] active-parent' : ''
       }`}
     >
       <span className={`${todo.completed ? 'line-through' : ''}`}>
-        {index + 1}) {newTitle(todo.title)}
+        {index + 1}) {computedSizeTitle(todo.title)}
       </span>
 
       <div
