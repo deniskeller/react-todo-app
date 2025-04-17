@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import styles from './TodoEdit.module.scss';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { updateTodo } from '../../store/redux-toolkit/todos/todosSlice';
 
@@ -39,28 +38,33 @@ const TodoEdit: React.FC = () => {
   }, [location.pathname, todos]);
 
   return (
-    <div className={styles.taskEdit}>
+    <div className='max-w-[500px] w-full mx-auto bg-[#ebecf0] rounded-[5px] mt-[50px] p-[30px_13px_10px] TodoEdit'>
       <div
-        className={`${styles.taskEdit__textOverflow} ${
-          error ? styles.error : ''
+        className={`overflow-hidden p-[6px_8px_2px] relative z-10 bg-white mb-[15px] rounded-[5px] ${
+          error ? 'border border-red-500' : ''
         }`}
       >
         <textarea
-          className={styles.taskEdit__text}
+          className='block text-base leading-5 text-[#172b4d] bg-white w-full h-auto max-h-[162px] min-h-[70px] overflow-y-auto p-0 border-none shadow-none overflow-hidden break-words resize-none outline-none'
           placeholder='Введите текст задачи...'
           value={todoTitle}
           onChange={handleChange}
-        ></textarea>
+        />
       </div>
-
-      <div className={styles.taskEdit__buttons}>
-        <button className={styles.btnSave} onClick={handleEditTodo}>
+      <div className='flex justify-between items-center'>
+        <button
+          className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] hover:shadow-md hover:scale-105 transition-all duration-200'
+          onClick={handleEditTodo}
+        >
           Save
         </button>
 
-        <div className={styles.btnBack} onClick={() => navigate(-1)}>
+        <button
+          className='text-xl leading-6 font-semibold pl-2.5'
+          onClick={() => navigate(-1)}
+        >
           Back
-        </div>
+        </button>
       </div>
     </div>
   );
