@@ -1,5 +1,4 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from 'react';
-import styles from './TodoItem.module.scss';
 import { Todo } from '../../store/redux-toolkit/todos/types';
 
 interface Props {
@@ -18,16 +17,16 @@ const TodoItem: React.FC<Props> = ({
   onEdit
 }) => {
   const [isActive, setIsActive] = useState(false);
-
+  const handleToggleMenu = () => {
+    setIsActive(!isActive);
+  };
+  // ОБРЕЗКА ТЕКСТА ЕСЛИ НЕ ВМЕЩАЕТСЯ
   const newTitle = (text: string) => {
-    if (text.length > 30) {
-      return (text = text.slice(0, 30) + '...');
-    }
+    if (text.length > 30) return (text = text.slice(0, 30) + '...');
     return text;
   };
 
   const wrapperRef = useRef<HTMLDivElement>(null);
-
   const handleDocumentClick = useCallback((e: any) => {
     if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
       setIsActive(false);
@@ -41,64 +40,62 @@ const TodoItem: React.FC<Props> = ({
     };
   }, [handleDocumentClick]);
 
-  const toggleMenu = () => {
-    setIsActive(!isActive);
-  };
-
-  const computedStyleWrapper = () => {
-    let cls = [styles.taskList__item];
-    if (isActive) {
-      cls.push(styles.active);
-    }
-
-    return cls.join(' ');
-  };
-
   return (
-    <div className={computedStyleWrapper()} ref={wrapperRef}>
-      <span className={`${todo.completed ? styles.taskList__item__done : ''}`}>
+    <div
+      ref={wrapperRef}
+      className={`group bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] flex items-center mb-2 w-full min-h-[50px] py-[3px] pr-[45px] pl-[15px] relative no-underline hover:bg-[rgba(176,203,247,0.2)] ${
+        isActive ? '!bg-[rgba(176,203,247,0.2)] active-parent' : ''
+      }`}
+    >
+      <span className={`${todo.completed ? 'line-through' : ''}`}>
         {index + 1}) {newTitle(todo.title)}
       </span>
 
-      <div className={styles.taskList__item__edit} onClick={toggleMenu}>
+      <div
+        className='hidden absolute right-[15px] w-5 h-5 cursor-pointer group-hover:block group-[.active-parent]:block'
+        onClick={handleToggleMenu}
+      >
         <svg
-          className={styles.edit}
+          className='w-[24px] h-[24px] hover:fill-black group-[.active-parent]:fill-black'
           xmlns='http://www.w3.org/2000/svg'
-          width='24'
-          height='24'
           viewBox='0 0 24 24'
+          fill='#ccc'
         >
           <path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z' />
           <path d='M0 0h24v24H0z' fill='none' />
         </svg>
       </div>
 
-      {isActive && (
-        <div className={styles.taskList__item__menu}>
-          <div
-            className={styles.taskList__item__menuItem}
-            onClick={() => onToggle(todo)}
-          >
-            {todo.completed ? 'Не выполнено' : 'Выполнено'}
-          </div>
-
-          <div
-            className={styles.taskList__item__menuItem}
-            onClick={() => onEdit(todo.id)}
-          >
-            Редактировать
-          </div>
-          <div
-            onClick={() => {
-              onDelete(todo.id);
-              setIsActive(false);
-            }}
-            className={styles.taskList__item__menuItem}
-          >
-            Удалить
-          </div>
+      <div
+        className={`absolute right-[-20px] top-[55px] w-auto z-[1000] -translate-x-5  transition-all duration-200 ease-in transform ${
+          isActive
+            ? 'pointer-events-auto opacity-1'
+            : 'pointer-events-none opacity-0'
+        }`}
+      >
+        <div
+          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer'
+          onClick={() => onToggle(todo)}
+        >
+          {todo.completed ? 'Не выполнено' : 'Выполнено'}
         </div>
-      )}
+
+        <div
+          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer'
+          onClick={() => onEdit(todo.id)}
+        >
+          Редактировать
+        </div>
+        <div
+          onClick={() => {
+            onDelete(todo.id);
+            setIsActive(false);
+          }}
+          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer'
+        >
+          Удалить
+        </div>
+      </div>
     </div>
   );
 };
