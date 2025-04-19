@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { NavLink } from 'react-router';
 import styles from './TodoList.module.scss';
 import Loader from '../../components/Loader/Loader';
 import TodoItem from '../../components/TodoItem/TodoItem';
@@ -12,6 +11,7 @@ import {
   updateTodo
 } from '../../store/redux-toolkit/todos/todosSlice';
 import { SortType, Todo } from '../../store/redux-toolkit/todos/types';
+import Pagination from '../../components/Pagination/Pagination';
 
 const TodoList: React.FC = () => {
   const navigate = useNavigate();
@@ -64,9 +64,7 @@ const TodoList: React.FC = () => {
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
   );
-  // кнопки управления смены страниц
-  const prevDisabled = currentPage <= 1;
-  const nextDisabled = currentPage >= pageCount;
+
   // проверка на несуществующие страницы
   useEffect(() => {
     if (!todos.length) return;
@@ -184,60 +182,7 @@ const TodoList: React.FC = () => {
       )}
 
       {pageCount > 1 && (
-        <div className={styles.taskControl}>
-          <NavLink
-            to={{
-              pathname: '/page/' + (currentPage - 1)
-            }}
-            className={`${styles.taskControl__prevBtn} ${
-              styles.taskControl__btn
-            } ${prevDisabled ? styles.disable : ''}`}
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              width='24'
-              height='24'
-              viewBox='0 0 24 24'
-            >
-              <path d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z' />
-              <path d='M0 0h24v24H0z' fill='none' />
-            </svg>
-          </NavLink>
-
-          {Array.from(
-            { length: Math.ceil(todos.length / 5) },
-            (_, i) => i + 1
-          ).map((number) => (
-            <NavLink
-              key={number}
-              to={`/page/${number}`}
-              className={`pagination-link ${
-                currentPage - 1 === number ? 'active' : ''
-              }`}
-            >
-              {number}
-            </NavLink>
-          ))}
-
-          <NavLink
-            to={{
-              pathname: '/page/' + (currentPage + 1)
-            }}
-            className={`${styles.taskControl__nextBtn} ${
-              styles.taskControl__btn
-            } ${nextDisabled ? styles.disable : ''}`}
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              width='24'
-              height='24'
-              viewBox='0 0 24 24'
-            >
-              <path d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z' />
-              <path d='M0 0h24v24H0z' fill='none' />
-            </svg>
-          </NavLink>
-        </div>
+        <Pagination pageCount={pageCount} currentPage={currentPage} />
       )}
     </div>
   );
