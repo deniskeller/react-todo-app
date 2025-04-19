@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
   createTodo,
   deleteTodo,
+  setCurrentPage,
   sortTodos,
   updateTodo
 } from '../../store/redux-toolkit/todos/todosSlice';
@@ -18,12 +19,17 @@ const TodoList: React.FC = () => {
   const dispatch = useAppDispatch();
   const [title, setTitle] = useState<string>('');
   const [inputError, setInputError] = useState<boolean>(false);
-  const { todos, status, error } = useAppSelector((state) => state.todos);
+  const { todos, status, error, currentPage, itemsPerPage } = useAppSelector(
+    (state) => state.todos
+  );
   const [sortType, setSortType] = useState<SortType>('none');
-  const ITEMS_PER_PAGE = 5;
-  const pageCount = Math.ceil(todos.length / ITEMS_PER_PAGE);
+  const pageCount = Math.ceil(todos.length / itemsPerPage);
   const { pageNumber = '1' } = useParams();
-  const currentPage = parseInt(pageNumber, 10) || 1;
+  // const currentPage = parseInt(pageNumber, 10) || 1;
+
+  useEffect(() => {
+    dispatch(setCurrentPage(+pageNumber));
+  }, [dispatch, pageNumber]);
 
   // ---------- СОЗДАНИЕ НОВОЙ ЗАДАЧИ
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,7 +39,7 @@ const TodoList: React.FC = () => {
         setInputError(false);
         await dispatch(createTodo({ title, completed: false }));
         setTitle('');
-        const pageCount = Math.ceil((todos.length + 1) / ITEMS_PER_PAGE);
+        const pageCount = Math.ceil((todos.length + 1) / itemsPerPage);
         if (pageCount > 1) navigate(`/page/${pageCount}`);
       } catch (error) {
         console.log('error: ', error);
@@ -59,10 +65,14 @@ const TodoList: React.FC = () => {
   };
 
   // ---------- ПАГИНАЦИЯ
+  const handlePageChange = (page: number) => {
+    dispatch(setCurrentPage(page));
+    navigate(`/page/${page}`);
+  };
   // расчет задач для постраничного вывода
   const paginatedTodos = todos.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
   );
 
   // проверка на несуществующие страницы
@@ -168,7 +178,7 @@ const TodoList: React.FC = () => {
                 <TodoItem
                   key={todo.id}
                   todo={todo}
-                  index={(currentPage - 1) * ITEMS_PER_PAGE + index}
+                  index={(currentPage - 1) * itemsPerPage + index}
                   onToggle={handleToggleTodo}
                   onDelete={handleDeleteTodo}
                   onEdit={handleEditTodo}
@@ -182,7 +192,12 @@ const TodoList: React.FC = () => {
       )}
 
       {pageCount > 1 && (
-        <Pagination pageCount={pageCount} currentPage={currentPage} />
+        <Pagination
+          currentPage={currentPage}
+          totalItems={todos.length}
+          itemsPerPage={itemsPerPage}
+          onPageChange={handlePageChange}
+        />
       )}
     </div>
   );

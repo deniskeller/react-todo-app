@@ -8,6 +8,8 @@ interface TodosState {
   status: 'initial' | 'loading' | 'succeeded' | 'failed';
   error: string | null; 
 	sortType: SortType;
+	currentPage: number;
+  itemsPerPage: number;
 }
 
 // НАЧАЛЬНОЕ СОСТОЯНИЕ
@@ -15,7 +17,9 @@ const initialState: TodosState = {
   todos: [],
   status: 'initial',
   error: null, 
-	sortType: 'none'
+	sortType: 'none',
+	currentPage: 1,
+  itemsPerPage: 5,
 };
 
 // Вспомогательная функция для обработки ошибок fetch
@@ -96,6 +100,9 @@ const todosSlice = createSlice({
 				})
 			};
 		},
+		setCurrentPage: (state, action: PayloadAction<number>) => {		
+      state.currentPage = action.payload;
+    }
 	},
   extraReducers: (builder) => {
     builder
@@ -112,6 +119,11 @@ const todosSlice = createSlice({
       })
       .addCase(createTodo.fulfilled, (state, action) => {		
 				state.todos.push(action.payload);
+
+				const totalPages = Math.ceil(state.todos.length / state.itemsPerPage);
+				if (state.currentPage < totalPages) {
+					state.currentPage = totalPages;
+				}
       })
       .addCase(updateTodo.fulfilled, (state, action) => {
 				const index = state.todos.findIndex(t => t.id === action.payload.id);
@@ -121,9 +133,14 @@ const todosSlice = createSlice({
       })
       .addCase(deleteTodo.fulfilled, (state, action) => {
         state.todos = state.todos.filter((todo) => todo.id !== action.payload);
+				// Если после удаления текущая страница пуста и это не первая страница, то переходим на страницу меньше
+				const startIndex = (state.currentPage - 1) * state.itemsPerPage;
+				if (state.todos.slice(startIndex, startIndex + state.itemsPerPage).length === 0 && state.currentPage > 1) {
+					state.currentPage -= 1;
+				}
       })
   },
 });
 
-export const { sortTodos } = todosSlice.actions;
+export const { sortTodos, setCurrentPage } = todosSlice.actions;
 export default todosSlice.reducer;

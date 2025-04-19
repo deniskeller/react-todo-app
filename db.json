@@ -23,12 +23,7 @@
     {
       "id": "5158",
       "title": "555",
-      "completed": false
-    },
-    {
-      "id": "9ce5",
-      "title": "666",
-      "completed": false
+      "completed": true
     }
   ]
 }
