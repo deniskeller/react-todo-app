@@ -37,7 +37,7 @@ const TodoItem: React.FC<Props> = ({
   return (
     <div
       ref={todoRef}
-      className={`group bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] flex items-center mb-2 w-full min-h-[50px] py-[3px] pr-[45px] pl-[15px] relative no-underline hover:bg-[rgba(176,203,247,0.2)] ${
+      className={`group bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] flex items-center w-full min-h-[50px] py-[3px] pr-[45px] pl-[15px] relative no-underline hover:bg-[rgba(176,203,247,0.2)] ${
         isActive ? '!bg-[rgba(176,203,247,0.2)] active-parent' : ''
       }`}
     >

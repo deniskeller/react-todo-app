@@ -89,40 +89,51 @@ const TodoList: React.FC = () => {
   };
 
   return (
-    <div className={styles.taskContent}>
-      <div className={styles.taskHeader}>
-        <div className={styles.taskHeader__title}>Задачи</div>
-        <div className={styles.taskHeader__options}>
-          <span>&bull;&bull;&bull;</span>
+    <div className='max-w-[500px] w-full mx-auto bg-[#ebecf0] rounded-[5px] mt-[50px] p-[30px_13px_13px]'>
+      <div className='flex flex-row items-center flex-none mb-[15px] relative min-h-[20px]'>
+        <div className='text-[20px] leading-[24px] font-semibold pl-[10px]'>
+          Задачи
+        </div>
+        <div className='cursor-pointer absolute right-[5px] h-[30px] w-[30px] p-[6px] rounded-[3px] flex justify-center items-center hover:bg-[rgba(9,30,66,0.08)]'>
+          <span className='absolute text-[16px]'>&bull;&bull;&bull;</span>
         </div>
       </div>
 
-      <form className={styles.taskForm} onSubmit={handleSubmit}>
+      <form className='mb-[20px]' onSubmit={handleSubmit}>
         <div
-          className={`${styles.taskForm__textOverflow} ${
-            inputError ? styles.error : ''
+          className={`overflow-hidden p-[6px_8px_2px] relative z-10 bg-white mb-[15px] rounded-[5px] ${
+            inputError ? 'border border-red-500' : ''
           }`}
         >
           <textarea
             placeholder='Введите текст задачи...'
-            className={styles.taskForm__text}
+            className='block text-base leading-5	text-[#172b4d]	bg-white	w-full	h-auto max-h-[162px] min-h-[70px]	overflow-y-auto	p-0	border-none	shadow-none	overflow-hidden break-words	resize-none outline-none'
             value={title}
             onChange={(event) => setTitle(event.target.value)}
           />
         </div>
 
-        <div className={styles.taskForm__actions}>
-          <button className={styles.taskForm__add} type='submit'>
-            Add card
+        <div className='flex flex-row items-center relative'>
+          <button
+            type='submit'
+            className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f]'
+          >
+            Добавить
           </button>
 
-          <div className={styles.taskForm__delete} onClick={() => setTitle('')}>
-            <span></span>
+          <div
+            className='group leading-8 w-[25px]	h-[25px] relative cursor-pointer'
+            onClick={() => setTitle('')}
+          >
+            <span
+              className="block w-full h-[3px] bg-[#6b778c] absolute top-[calc(50%-1px)] rotate-45 before:content-[''] before:block before:w-full before:h-[3px] before:bg-[#6b778c]
+    before:absolute before:rotate-90 group-hover:bg-black group-hover:before:bg-black"
+            ></span>
           </div>
 
           <button
             type='button'
-            className={styles.taskForm__options}
+            className='absolute right-[5px] cursor-pointer h-[30px] w-[30px] p-[6px] rounded-[3px] hover:bg-[rgba(9,30,66,0.08)]'
             onClick={handleSort}
             aria-label={`Sort by ${sortType}`}
             title={`Current sort: ${sortType}`}
@@ -154,7 +165,7 @@ const TodoList: React.FC = () => {
       {status === 'succeeded' && (
         <>
           {todos.length > 0 ? (
-            <div className={styles.taskList}>
+            <div className='grid gap-[8px]'>
               {paginatedTodos.map((todo, index) => (
                 <TodoItem
                   key={todo.id}
@@ -167,7 +178,7 @@ const TodoList: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className={styles.taskEmpty}>У вас пока нет задач</div>
+            <div className='text-center'>У вас пока нет задач</div>
           )}
         </>
       )}
