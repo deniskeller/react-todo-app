@@ -45,6 +45,7 @@ const Pagination: React.FC<PaginationProps> = ({
     <div className={styles.taskControl}>
       {/* к первой странице */}
       <button
+        title='Первая страница'
         onClick={() => onPageChange(1)}
         className={`${styles.taskControl__prevBtn} ${styles.taskControl__btn} ${
           prevDisabled ? styles.disable : ''
@@ -63,6 +64,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* к предыдущей странице */}
       <button
+        title='Предыдущая страница'
         onClick={() => onPageChange(currentPage - 1)}
         className={`${styles.taskControl__prevBtn} ${styles.taskControl__btn} ${
           prevDisabled ? styles.disable : ''
@@ -99,6 +101,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* к следующей странице */}
       <button
+        title='Следущая страница'
         onClick={() => onPageChange(currentPage + 1)}
         className={`${styles.taskControl__nextBtn} ${styles.taskControl__btn} ${
           nextDisabled ? styles.disable : ''
@@ -117,6 +120,7 @@ const Pagination: React.FC<PaginationProps> = ({
 
       {/* к последней странице */}
       <button
+        title='Последняя страница'
         onClick={() => onPageChange(totalPages)}
         className={`${styles.taskControl__nextBtn} ${styles.taskControl__btn} ${
           nextDisabled ? styles.disable : ''
