@@ -76,13 +76,11 @@ const BaseSelect: React.FC<Props> = ({
       >
         {options.map((option: SelectItem, index) => (
           <li
-            // className={styles.ListItem}
+            className='cursor-pointer h-[40px] list-none flex items-center px-[16px] text-[#fff] hover:bg-black/40'
             onClick={onOptionClicked(option)}
             key={index}
           >
-            <span
-            // className={styles.ListItemTitle}
-            >
+            <span className='leading-none text-base font-normal font-inherit'>
               {option.label}
             </span>
           </li>
