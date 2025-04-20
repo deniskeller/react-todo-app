@@ -61,21 +61,21 @@ const TodoItem: React.FC<Props> = ({
       </div>
 
       <div
-        className={`absolute right-[-20px] top-[55px] w-auto z-[1000] -translate-x-5  transition-all duration-200 ease-in transform ${
+        className={`absolute right-[-20px] top-[55px] w-auto z-[1000] -translate-x-5  transition-all duration-200 ease-in-out transform ${
           isActive
             ? 'pointer-events-auto opacity-1'
             : 'pointer-events-none opacity-0'
         }`}
       >
         <div
-          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer'
+          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer'
           onClick={() => onToggle(todo)}
         >
           {todo.completed ? 'Не выполнено' : 'Выполнено'}
         </div>
 
         <div
-          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer'
+          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer'
           onClick={() => onEdit(todo.id)}
         >
           Редактировать
@@ -85,7 +85,7 @@ const TodoItem: React.FC<Props> = ({
             onDelete(todo.id);
             setIsActive(false);
           }}
-          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer'
+          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer'
         >
           Удалить
         </div>

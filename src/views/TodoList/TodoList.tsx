@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import styles from './TodoList.module.scss';
 import Loader from '../../components/Loader/Loader';
 import TodoItem from '../../components/TodoItem/TodoItem';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
@@ -11,8 +10,10 @@ import {
   sortTodos,
   updateTodo
 } from '../../store/redux-toolkit/todos/todosSlice';
-import { SortType, Todo } from '../../store/redux-toolkit/todos/types';
+import { Todo } from '../../store/redux-toolkit/todos/types';
 import Pagination from '../../components/Pagination/Pagination';
+import { BaseSelect } from 'components/base';
+import { SelectItem } from 'constants/globals/types';
 
 const TodoList: React.FC = () => {
   const navigate = useNavigate();
@@ -22,10 +23,8 @@ const TodoList: React.FC = () => {
   const { todos, status, error, currentPage, itemsPerPage } = useAppSelector(
     (state) => state.todos
   );
-  const [sortType, setSortType] = useState<SortType>('none');
   const pageCount = Math.ceil(todos.length / itemsPerPage);
   const { pageNumber = '1' } = useParams();
-  // const currentPage = parseInt(pageNumber, 10) || 1;
 
   useEffect(() => {
     dispatch(setCurrentPage(+pageNumber));
@@ -74,7 +73,6 @@ const TodoList: React.FC = () => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
   // проверка на несуществующие страницы
   useEffect(() => {
     if (!todos.length) return;
@@ -83,18 +81,20 @@ const TodoList: React.FC = () => {
   }, [navigate, pageCount, pageNumber, todos.length]);
 
   // ---------- СОРТИРОВКА СПИСКА ЗАДАЧ
-  const handleSort = () => {
-    const sortOrder: SortType[] = [
-      'none',
-      'завершенные',
-      'активные',
-      'по алфивиту'
-    ];
-    const currentIndex = sortOrder.indexOf(sortType);
-    const nextIndex = (currentIndex + 1) % sortOrder.length;
-    setSortType(sortOrder[nextIndex]);
-    dispatch(sortTodos(sortOrder[nextIndex]));
+  const sortByList = [
+    { label: 'Все', value: 'none' },
+    { label: 'Завершенные', value: 'completed' },
+    { label: 'Активные', value: 'active' },
+    { label: 'По алфивиту', value: 'by_alphabet' }
+  ];
+
+  const [sortByItem, setSortByItem] = useState<SelectItem>(sortByList[0]);
+  const handleSortBy = (value: SelectItem) => {
+    setSortByItem(value);
+    dispatch(sortTodos(value.value));
   };
+
+  // useEffect(() => {}, []);
 
   return (
     <div className='max-w-[500px] w-full mx-auto bg-[#ebecf0] rounded-[5px] mt-[50px] p-[30px_13px_13px]'>
@@ -129,44 +129,24 @@ const TodoList: React.FC = () => {
             Добавить
           </button>
 
-          <div
-            className='group leading-8 w-[25px]	h-[25px] relative cursor-pointer'
+          <button
+            className='group leading-8 w-[25px]	h-[25px] mr-[15px] relative cursor-pointer'
             onClick={() => setTitle('')}
           >
             <span
               className="block w-full h-[3px] bg-[#6b778c] absolute top-[calc(50%-1px)] rotate-45 before:content-[''] before:block before:w-full before:h-[3px] before:bg-[#6b778c]
     before:absolute before:rotate-90 group-hover:bg-black group-hover:before:bg-black"
             ></span>
-          </div>
-
-          <button
-            type='button'
-            className='absolute right-[5px] cursor-pointer h-[30px] w-[30px] p-[6px] rounded-[3px] hover:bg-[rgba(9,30,66,0.08)]'
-            onClick={handleSort}
-            aria-label={`Sort by ${sortType}`}
-            title={`Current sort: ${sortType}`}
-          >
-            <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
-              <path d='M9 3L5 6.99h3V14h2V6.99h3L9 3zm7 14.01V10h-2v7.01h-3L15 21l4-3.99h-3z' />
-              <path d='M0 0h24v24H0z' fill='none' />
-            </svg>
           </button>
+
+          <BaseSelect
+            initialValue={sortByItem}
+            options={sortByList}
+            onChange={handleSortBy}
+            className='ml-auto'
+          />
         </div>
       </form>
-
-      {/* Индикатор текущей сортировки */}
-      {sortType !== 'none' && (
-        <div className={styles.sortIndicator}>
-          Сортировка задач: {sortType}
-          <button
-            onClick={() => setSortType('none')}
-            className={styles.clearSort}
-            style={{ cursor: 'pointer' }}
-          >
-            (Сбросить)
-          </button>
-        </div>
-      )}
 
       {status === 'loading' && <Loader />}
       {status === 'failed' && <div>{error}</div>}

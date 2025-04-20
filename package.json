@@ -10,9 +10,6 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -25,28 +22,28 @@
       "last 1 safari version"
     ]
   },
+  "type": "module",
   "dependencies": {
     "@reduxjs/toolkit": "^2.6.1",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
     "ajv": "^8.17.1",
     "dotenv": "^16.4.7",
-    "firebase": "^11.6.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "firebase": "^10.11.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-redux": "^9.2.0",
     "react-router": "^7.1.5",
-    "react-scripts": "^5.0.1",
-    "sass": "^1.84.0"
+    "react-scripts": "^5.0.1"
   },
-  "devDependencies": {
+  "devDependencies": {    
     "@types/node": "^20.11.0",
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "eslint": "^8.0.0",
+    "eslint-config-react-app": "^7.0.1",    
+    "globals": "^16.0.0",
     "json-server": "^1.0.0-beta.3",
     "tailwindcss": "^3.4.17",
-    "typescript": "~4.9.5",
-    "typescript-eslint": "^8.29.1"
+    "typescript": "^5.6.2"
+    
   }
 }

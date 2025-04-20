@@ -1,13 +1,12 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Todo, NewTodo, SortType } from './types';
+import { Todo, NewTodo } from './types';
 
 const API_URL = 'http://localhost:3001/todos';
 
 interface TodosState {
   todos: Todo[];
   status: 'initial' | 'loading' | 'succeeded' | 'failed';
-  error: string | null; 
-	sortType: SortType;
+  error: string | null;
 	currentPage: number;
   itemsPerPage: number;
 }
@@ -16,8 +15,7 @@ interface TodosState {
 const initialState: TodosState = {
   todos: [],
   status: 'initial',
-  error: null, 
-	sortType: 'none',
+  error: null,
 	currentPage: 1,
   itemsPerPage: 5,
 };
@@ -82,17 +80,16 @@ const todosSlice = createSlice({
   name: 'todos',
   initialState,
   reducers: {
-		sortTodos(state, action: PayloadAction<SortType>) {
+		sortTodos(state, action: PayloadAction<string>) {
 			return {
 				...state,
-				sortType: action.payload,
 				todos: [...state.todos].sort((a, b) => {
 					switch (action.payload) {
-						case 'завершенные':
+						case 'completed':
 							return Number(b.completed) - Number(a.completed);
-						case 'активные':
+						case 'active':
 							return Number(a.completed) - Number(b.completed);
-						case 'по алфивиту':
+						case 'by_alphabet':
 							return a.title.localeCompare(b.title);
 						default:
 							return 0;
