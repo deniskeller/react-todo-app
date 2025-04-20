@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './Pagination.module.scss';
 
 interface PaginationProps {
   currentPage: number;
@@ -15,7 +14,7 @@ const Pagination: React.FC<PaginationProps> = ({
   onPageChange
 }) => {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const maxVisiblePages = 4;
+  const MAX_VISIBLE_PAGES = 3;
   // кнопки управления смены страниц
   const prevDisabled = currentPage <= 1;
   const nextDisabled = currentPage >= totalPages;
@@ -24,14 +23,14 @@ const Pagination: React.FC<PaginationProps> = ({
   let startPage = 1;
   let endPage = totalPages;
 
-  if (totalPages > maxVisiblePages) {
-    const halfVisible = Math.floor(maxVisiblePages / 2);
+  if (totalPages > MAX_VISIBLE_PAGES) {
+    const halfVisible = Math.floor(MAX_VISIBLE_PAGES / 2);
     startPage = Math.max(1, currentPage - halfVisible);
-    endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    endPage = Math.min(totalPages, startPage + MAX_VISIBLE_PAGES - 1);
 
     // Корректируем начало, если конец диапазона слишком близок к последней странице
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    if (endPage - startPage + 1 < MAX_VISIBLE_PAGES) {
+      startPage = Math.max(1, endPage - MAX_VISIBLE_PAGES + 1);
     }
   }
 
@@ -42,54 +41,64 @@ const Pagination: React.FC<PaginationProps> = ({
   );
 
   return (
-    <div className={styles.taskControl}>
+    <div className='flex items-center mt-[20px]'>
       {/* к первой странице */}
-      <button
-        title='Первая страница'
-        onClick={() => onPageChange(1)}
-        className={`${styles.taskControl__prevBtn} ${styles.taskControl__btn} ${
-          prevDisabled ? styles.disable : ''
-        }`}
-      >
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          width='24'
-          height='24'
-          viewBox='0 0 24 24'
+      {totalPages > 3 && (
+        <button
+          title='Первая страница'
+          onClick={() => onPageChange(1)}
+          className={`inline-flex items-center justify-center cursor-pointer rounded-[3px] w-[30px] h-[30px] hover:bg-[rgba(9,30,66,0.08)] ${
+            prevDisabled ? 'pointer-events-none' : ''
+          }`}
         >
-          <path d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z' />
-          <path d='M0 0h24v24H0z' fill='none' />
-        </svg>
-      </button>
+          <svg
+            className='w-[30px] h-[30px] rotate-180'
+            viewBox='0 0 30 30'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              fill-rule='evenodd'
+              clip-rule='evenodd'
+              d='M8.64969 23.8058C8.22984 24.1646 7.59861 24.1151 7.23981 23.6952C6.881 23.2754 6.93049 22.6441 7.35034 22.2853L15.8485 15.0228L7.35034 7.76023C6.93049 7.40142 6.881 6.77019 7.23981 6.35034C7.59861 5.93049 8.22984 5.881 8.64969 6.2398L18.0374 14.2626L18.927 15.0228L18.0374 15.783L8.64969 23.8058ZM12.7806 23.8058C12.3607 24.1646 11.7295 24.1151 11.3707 23.6952C11.0119 23.2754 11.0613 22.6441 11.4812 22.2853L19.9794 15.0228L11.4812 7.76023C11.0613 7.40142 11.0119 6.77019 11.3707 6.35034C11.7295 5.93049 12.3607 5.881 12.7806 6.2398L22.1683 14.2626L23.0579 15.0228L22.1683 15.783L12.7806 23.8058Z'
+              fill='black'
+            />
+          </svg>
+        </button>
+      )}
 
       {/* к предыдущей странице */}
       <button
         title='Предыдущая страница'
         onClick={() => onPageChange(currentPage - 1)}
-        className={`${styles.taskControl__prevBtn} ${styles.taskControl__btn} ${
-          prevDisabled ? styles.disable : ''
+        className={`inline-flex items-center justify-center cursor-pointer rounded-[3px] w-[30px] h-[30px] hover:bg-[rgba(9,30,66,0.08)] ${
+          prevDisabled ? 'pointer-events-none' : ''
         }`}
       >
         <svg
+          className='w-[30px] h-[30px] rotate-180'
+          viewBox='0 0 30 30'
+          fill='none'
           xmlns='http://www.w3.org/2000/svg'
-          width='24'
-          height='24'
-          viewBox='0 0 24 24'
         >
-          <path d='M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z' />
-          <path d='M0 0h24v24H0z' fill='none' />
+          <path
+            d='M10 23.05L19.39 15.025L10 7'
+            stroke='black'
+            stroke-width='2'
+            stroke-linecap='round'
+          />
         </svg>
       </button>
 
       {/* Многоточие, если есть скрытые страницы в начале */}
-      {startPage > 1 && <span className='pagination-ellipsis'>...</span>}
+      {startPage > 1 && <span className='m-[0_10px]'>...</span>}
 
       {pages.map((number) => (
         <button
           key={number}
           onClick={() => onPageChange(number)}
-          className={`pagination-link ${
-            currentPage - 1 === number ? 'active' : ''
+          className={`m-[0_4px] ${
+            currentPage === number ? 'text-[#61bd4f]' : ''
           }`}
         >
           {number}
@@ -97,45 +106,55 @@ const Pagination: React.FC<PaginationProps> = ({
       ))}
 
       {/* Многоточие, если есть скрытые страницы в конце */}
-      {endPage < totalPages && <span className='pagination-ellipsis'>...</span>}
+      {endPage < totalPages && <span className='m-[0_10px]'>...</span>}
 
       {/* к следующей странице */}
       <button
         title='Следущая страница'
         onClick={() => onPageChange(currentPage + 1)}
-        className={`${styles.taskControl__nextBtn} ${styles.taskControl__btn} ${
-          nextDisabled ? styles.disable : ''
+        className={`inline-flex items-center justify-center cursor-pointer rounded-[3px] w-[30px] h-[30px] hover:bg-[rgba(9,30,66,0.08)] ${
+          nextDisabled ? 'pointer-events-none' : ''
         }`}
       >
         <svg
+          className='w-[30px] h-[30px]'
+          viewBox='0 0 30 30'
+          fill='none'
           xmlns='http://www.w3.org/2000/svg'
-          width='24'
-          height='24'
-          viewBox='0 0 24 24'
         >
-          <path d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z' />
-          <path d='M0 0h24v24H0z' fill='none' />
+          <path
+            d='M10 23.05L19.39 15.025L10 7'
+            stroke='black'
+            stroke-width='2'
+            stroke-linecap='round'
+          />
         </svg>
       </button>
 
       {/* к последней странице */}
-      <button
-        title='Последняя страница'
-        onClick={() => onPageChange(totalPages)}
-        className={`${styles.taskControl__nextBtn} ${styles.taskControl__btn} ${
-          nextDisabled ? styles.disable : ''
-        }`}
-      >
-        <svg
-          xmlns='http://www.w3.org/2000/svg'
-          width='24'
-          height='24'
-          viewBox='0 0 24 24'
+      {totalPages > 3 && (
+        <button
+          title='Последняя страница'
+          onClick={() => onPageChange(totalPages)}
+          className={`inline-flex items-center justify-center cursor-pointer rounded-[3px] w-[30px] h-[30px] hover:bg-[rgba(9,30,66,0.08)] ${
+            nextDisabled ? 'pointer-events-none' : ''
+          }`}
         >
-          <path d='M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z' />
-          <path d='M0 0h24v24H0z' fill='none' />
-        </svg>
-      </button>
+          <svg
+            className='w-[30px] h-[30px]'
+            viewBox='0 0 30 30'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+          >
+            <path
+              fill-rule='evenodd'
+              clip-rule='evenodd'
+              d='M8.64969 23.8058C8.22984 24.1646 7.59861 24.1151 7.23981 23.6952C6.881 23.2754 6.93049 22.6441 7.35034 22.2853L15.8485 15.0228L7.35034 7.76023C6.93049 7.40142 6.881 6.77019 7.23981 6.35034C7.59861 5.93049 8.22984 5.881 8.64969 6.2398L18.0374 14.2626L18.927 15.0228L18.0374 15.783L8.64969 23.8058ZM12.7806 23.8058C12.3607 24.1646 11.7295 24.1151 11.3707 23.6952C11.0119 23.2754 11.0613 22.6441 11.4812 22.2853L19.9794 15.0228L11.4812 7.76023C11.0613 7.40142 11.0119 6.77019 11.3707 6.35034C11.7295 5.93049 12.3607 5.881 12.7806 6.2398L22.1683 14.2626L23.0579 15.0228L22.1683 15.783L12.7806 23.8058Z'
+              fill='black'
+            />
+          </svg>
+        </button>
+      )}
     </div>
   );
 };
