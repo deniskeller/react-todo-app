@@ -7,7 +7,7 @@ import {
   createTodo,
   deleteCompletedTodos,
   deleteTodo,
-  setCurrentPageReducer,
+  setCurrentPage,
   updateTodo
 } from '../../store/redux-toolkit/todos/todosSlice';
 import { Todo } from '../../store/redux-toolkit/todos/types';
@@ -35,7 +35,7 @@ const TodoList: React.FC = () => {
   const { pageNumber = '1' } = useParams();
 
   useEffect(() => {
-    dispatch(setCurrentPageReducer(+pageNumber));
+    dispatch(setCurrentPage(+pageNumber));
   }, [dispatch, pageNumber]);
 
   // ---------- СОЗДАНИЕ НОВОЙ ЗАДАЧИ
@@ -73,7 +73,7 @@ const TodoList: React.FC = () => {
 
   // ---------- ПАГИНАЦИЯ
   const handlePageChange = (page: number) => {
-    dispatch(setCurrentPageReducer(page));
+    dispatch(setCurrentPage(page));
     navigate(`/page/${page}`);
   };
   // расчет задач для постраничного вывода
