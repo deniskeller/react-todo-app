@@ -1,7 +1,12 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction, SerializedError } from '@reduxjs/toolkit';
 import { Todo, NewTodo } from './types';
 
 const API_URL = 'http://localhost:3001/todos';
+
+type RejectedAction<T = unknown> = {
+  payload?: T;
+  error: SerializedError;
+};
 
 interface TodosState {
   todos: Todo[];
@@ -17,7 +22,6 @@ interface ApiError {
   code?: number;
   timestamp?: string;
 }
-
 
 // НАЧАЛЬНОЕ СОСТОЯНИЕ
 const initialState: TodosState = {
@@ -45,13 +49,14 @@ const computedPage = (state: TodosState) => {
 	}
 }
 // Функция для выведения ошибок
-const handleRejectError = (state: TodosState, action: any, message: string) => {
+const handleRejectError = (state: TodosState, action: RejectedAction<ApiError>, message: string) => {
 	if (action.payload) {
 		state.error = action.payload.message;
 	} else {
 		state.error = action.error.message || message;
 	}
 }
+
 // ПЕРВИЧНАЯ ЗАГРУЗКА ЗАДАЧ
 export const loadTodos = createAsyncThunk<
 Todo[],
@@ -297,12 +302,7 @@ const todosSlice = createSlice({
 				
       })
       .addCase(loadTodos.rejected, (state, action) => {
-        state.status = 'failed';				
-				// if (action.payload) {
-				// 	state.error = action.payload.message;
-				// } else {
-				// 	state.error = action.error.message || 'Ошибка загрузки задач';
-				// }
+        state.status = 'failed';
 				handleRejectError(state, action, 'Ошибка загрузки задач')
       })
 			// СОЗДАНИЕ НОВОЙ ЗАДАЧИ
@@ -320,11 +320,6 @@ const todosSlice = createSlice({
       })
 			.addCase(createTodo.rejected, (state, action) => {
         state.status = 'failed';
-				// if (action.payload) {
-				// 	state.error = action.payload.message;
-				// } else {
-				// 	state.error = action.error.message || 'Ошибка добавления задачи';
-				// }
 				handleRejectError(state, action, 'Ошибка добавления задачи')
       })
 			// ОБНОВЛЕНИЕ СТАТУСА ЗАДАЧИ
@@ -341,12 +336,7 @@ const todosSlice = createSlice({
       })
 			.addCase(updateTodo.rejected, (state, action) => {
         state.status = 'failed';
-				handleRejectError(state, action, 'Ошибка обновления задачи')    
-        // if (action.payload) {
-        //   state.error = action.payload.message;
-        // } else {
-        //   state.error = action.error.message || 'Ошибка обновления задачи';
-        // }
+				handleRejectError(state, action, 'Ошибка обновления задачи')
       })
 			// УДАЛЕНИЕ ЗАДАЧИ
 			.addCase(deleteTodo.pending, (state) => {
@@ -361,11 +351,6 @@ const todosSlice = createSlice({
 			.addCase(deleteTodo.rejected, (state, action) => {
         state.status = 'failed';
 				handleRejectError(state, action, 'Ошибка удаления задачи')
-        // if (action.payload) {
-        //   state.error = action.payload.message;
-        // } else {
-        //   state.error = action.error.message || 'Ошибка удаления задачи';
-        // }
       })
 			// УДАЛЕНИЕ ВСЕХ ВЫПОЛНЕННЫХ ЗАДАЧИ
 			.addCase(deleteCompletedTodos.pending, (state) => {
@@ -380,11 +365,6 @@ const todosSlice = createSlice({
       .addCase(deleteCompletedTodos.rejected, (state, action) => {
         state.status = 'failed';
 				handleRejectError(state, action, 'Ошибка удаления завершенных задач')
-				// if (action.payload) {
-        //   state.error = action.payload.message;
-        // } else {
-        //   state.error = action.error.message || 'Ошибка удаления завершенных задач';
-        // }
       })
 			// УДАЛЕНИЕ ВСЕХ ЗАДАЧ
 			.addCase(deleteAllTodos.pending, (state) => {
@@ -398,11 +378,6 @@ const todosSlice = createSlice({
       .addCase(deleteAllTodos.rejected, (state, action) => {
         state.status = 'failed';
 				handleRejectError(state, action, 'Ошибка очищения списка задач')
-				// if (action.payload) {
-        //   state.error = action.payload.message;
-        // } else {
-        //   state.error = action.error.message || 'Ошибка очищения списка задач';
-        // }
       });
   },
 });
