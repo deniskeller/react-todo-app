@@ -6,14 +6,15 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
   createTodo,
   deleteTodo,
-  setCurrentPage,
-  sortTodos,
+  setCurrentPageReducer,
   updateTodo
 } from '../../store/redux-toolkit/todos/todosSlice';
 import { Todo } from '../../store/redux-toolkit/todos/types';
 import Pagination from '../../components/Pagination/Pagination';
 import { BaseSelect } from 'components/base';
 import { SelectItem } from 'constants/globals/types';
+
+type FilterStatus = 'all' | 'completed' | 'active';
 
 const TodoList: React.FC = () => {
   const navigate = useNavigate();
@@ -23,11 +24,18 @@ const TodoList: React.FC = () => {
   const { todos, status, error, currentPage, itemsPerPage } = useAppSelector(
     (state) => state.todos
   );
-  const pageCount = Math.ceil(todos.length / itemsPerPage);
+  const [sortType, setSortType] = useState<FilterStatus>('all');
+  const filteredTodos = todos.filter((todo) => {
+    if (sortType === 'active') return !todo.completed;
+    if (sortType === 'completed') return todo.completed;
+    return true;
+  });
+
+  const pageCount = Math.ceil(filteredTodos.length / itemsPerPage);
   const { pageNumber = '1' } = useParams();
 
   useEffect(() => {
-    dispatch(setCurrentPage(+pageNumber));
+    dispatch(setCurrentPageReducer(+pageNumber));
   }, [dispatch, pageNumber]);
 
   // ---------- СОЗДАНИЕ НОВОЙ ЗАДАЧИ
@@ -65,33 +73,33 @@ const TodoList: React.FC = () => {
 
   // ---------- ПАГИНАЦИЯ
   const handlePageChange = (page: number) => {
-    dispatch(setCurrentPage(page));
+    dispatch(setCurrentPageReducer(page));
     navigate(`/page/${page}`);
   };
   // расчет задач для постраничного вывода
-  const paginatedTodos = todos.slice(
+  const paginatedTodos = filteredTodos.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
   // проверка на несуществующие страницы
   useEffect(() => {
-    if (!todos.length) return;
+    if (!filteredTodos.length) return;
     if (+pageNumber <= 0) navigate('/page/1');
     if (+pageNumber > pageCount) navigate('/page/' + pageCount);
-  }, [navigate, pageCount, pageNumber, todos.length]);
+  }, [navigate, pageCount, pageNumber, filteredTodos.length]);
 
   // ---------- СОРТИРОВКА СПИСКА ЗАДАЧ
   const sortByList = [
-    { label: 'Все', value: 'none' },
+    { label: 'Все', value: 'all' },
     { label: 'Завершенные', value: 'completed' },
-    { label: 'Активные', value: 'active' },
-    { label: 'По алфивиту', value: 'by_alphabet' }
+    { label: 'Активные', value: 'active' }
   ];
 
   const [sortByItem, setSortByItem] = useState<SelectItem>(sortByList[0]);
   const handleSortBy = (value: SelectItem) => {
     setSortByItem(value);
-    dispatch(sortTodos(value.value));
+    setSortType(value.value as FilterStatus);
+    navigate('/page/1');
   };
 
   // useEffect(() => {}, []);
@@ -152,7 +160,7 @@ const TodoList: React.FC = () => {
       {status === 'failed' && <div>{error}</div>}
       {status === 'succeeded' && (
         <>
-          {todos.length > 0 ? (
+          {filteredTodos.length > 0 ? (
             <div className='grid gap-[8px]'>
               {paginatedTodos.map((todo, index) => (
                 <TodoItem
@@ -174,7 +182,7 @@ const TodoList: React.FC = () => {
       {pageCount > 1 && (
         <Pagination
           currentPage={currentPage}
-          totalItems={todos.length}
+          totalItems={filteredTodos.length}
           itemsPerPage={itemsPerPage}
           onPageChange={handlePageChange}
         />

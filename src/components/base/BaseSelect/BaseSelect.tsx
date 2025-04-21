@@ -25,7 +25,7 @@ const BaseSelect: React.FC<Props> = ({
 
   const toggling = () => setIsOpen(!isOpen);
 
-  const onOptionClicked = (value: SelectItem) => () => {
+  const onOptionClicked = (value: SelectItem) => {
     setSelectedOption(value);
     setIsOpen(false);
     onChange(value);
@@ -77,7 +77,7 @@ const BaseSelect: React.FC<Props> = ({
         {options.map((option: SelectItem, index) => (
           <li
             className='cursor-pointer h-[40px] list-none flex items-center px-[16px] text-[#fff] hover:bg-black/40'
-            onClick={onOptionClicked(option)}
+            onClick={() => onOptionClicked(option)}
             key={index}
           >
             <span className='leading-none text-base font-normal font-inherit'>

@@ -80,24 +80,7 @@ const todosSlice = createSlice({
   name: 'todos',
   initialState,
   reducers: {
-		sortTodos(state, action: PayloadAction<string>) {
-			return {
-				...state,
-				todos: [...state.todos].sort((a, b) => {
-					switch (action.payload) {
-						case 'completed':
-							return Number(b.completed) - Number(a.completed);
-						case 'active':
-							return Number(a.completed) - Number(b.completed);
-						case 'by_alphabet':
-							return a.title.localeCompare(b.title);
-						default:
-							return 0;
-					}
-				})
-			};
-		},
-		setCurrentPage: (state, action: PayloadAction<number>) => {		
+		setCurrentPageReducer: (state, action: PayloadAction<number>) => {		
       state.currentPage = action.payload;
     }
 	},
@@ -109,6 +92,7 @@ const todosSlice = createSlice({
       .addCase(loadTodos.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.todos = action.payload;
+				
       })
       .addCase(loadTodos.rejected, (state, action) => {
         state.status = 'failed';
@@ -139,5 +123,5 @@ const todosSlice = createSlice({
   },
 });
 
-export const { sortTodos, setCurrentPage } = todosSlice.actions;
+export const { setCurrentPageReducer } = todosSlice.actions;
 export default todosSlice.reducer;
