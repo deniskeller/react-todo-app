@@ -119,6 +119,25 @@ export const deleteCompletedTodos = createAsyncThunk(
     }
   }
 );
+// УДАЛЕНИЕ ВСЕХ ЗАДАЧИ
+export const deleteAllTodos = createAsyncThunk(
+  'todos/deleteAllTodos',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}`);
+      const todos: Todo[] = await handleFetchError(response, 'Ошибка удаления задач');
+
+      await Promise.all(
+        todos.map(todo => 
+          fetch(`${API_URL}/${todo.id}`, { method: 'DELETE' })
+        )
+      );      
+      return null;
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  }
+);
 
 const todosSlice = createSlice({
   name: 'todos',
@@ -186,6 +205,19 @@ const todosSlice = createSlice({
       .addCase(deleteCompletedTodos.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload as string || 'Ошибка удаления выполненных задач';
+      })
+			// УДАЛЕНИЕ ВСЕХ ЗАДАЧ
+			.addCase(deleteAllTodos.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(deleteAllTodos.fulfilled, (state) => {
+        state.status = 'succeeded';
+        state.todos = [];
+      })
+      .addCase(deleteAllTodos.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload as string || 'Ошибка удаления всех задач';
       });
   },
 });

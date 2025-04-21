@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import Loader from '../../components/Loader/Loader';
-import TodoItem from '../../components/TodoItem/TodoItem';
-import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import Loader from 'components/Loader/Loader';
+import TodoItem from 'components/TodoItem/TodoItem';
+import { useAppDispatch, useAppSelector } from 'hooks/redux';
 import {
   createTodo,
+  deleteAllTodos,
   deleteCompletedTodos,
   deleteTodo,
   setCurrentPage,
   updateTodo
-} from '../../store/redux-toolkit/todos/todosSlice';
-import { Todo } from '../../store/redux-toolkit/todos/types';
-import Pagination from '../../components/Pagination/Pagination';
+} from 'store/redux-toolkit/todos/todosSlice';
+import { Todo } from 'store/redux-toolkit/todos/types';
+import Pagination from 'components/Pagination/Pagination';
 import { BaseSelect } from 'components/base';
 import { SelectItem } from 'constants/globals/types';
 
@@ -102,11 +103,18 @@ const TodoList: React.FC = () => {
   };
   // ---------- УДАЛЕНИЕ ЗАВЕРШЕННЫХ ЗАДАЧ
   const completedTodosCount = todos.filter((todo) => todo.completed).length;
-  const handleDeleteCompleted = () => {
+  const handleDeleteCompletedTodos = () => {
     if (
       window.confirm('Вы уверены, что хотите удалить все выполненные задачи?')
     ) {
       dispatch(deleteCompletedTodos());
+    }
+  };
+  // ---------- УДАЛЕНИЕ ВСЕХ ЗАДАЧ
+  const handleDeleteAllTodos = async () => {
+    if (window.confirm('Вы уверены, что хотите удалить все задачи?')) {
+      await dispatch(deleteAllTodos());
+      navigate('/page/1');
     }
   };
 
@@ -160,7 +168,32 @@ const TodoList: React.FC = () => {
               title='Удаление завершенных задач'
               type='button'
               className='group w-[30px] h-[30px] flex justify-center items-center ml-auto mr-[10px] rounded-[3px] hover:bg-[rgba(9,30,66,0.08)] transition-all duration-[500ms] ease-in-out'
-              onClick={handleDeleteCompleted}
+              onClick={handleDeleteCompletedTodos}
+            >
+              <svg
+                viewBox='0 0 24 24'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+                className='w-[24px] h-[24px]'
+              >
+                <path
+                  d='M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20'
+                  stroke='#6b778c'
+                  strokeWidth='2'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  className='transition-all duration-[500ms] ease-in-out group-hover:stroke-black'
+                />
+              </svg>
+            </button>
+          )}
+
+          {todos.length > 0 && (
+            <button
+              title='Удаление все задач'
+              type='button'
+              className='group w-[30px] h-[30px] flex justify-center items-center ml-auto mr-[10px] rounded-[3px] hover:bg-[rgba(9,30,66,0.08)] transition-all duration-[500ms] ease-in-out'
+              onClick={handleDeleteAllTodos}
             >
               <svg
                 viewBox='0 0 24 24'
