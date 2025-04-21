@@ -14,7 +14,7 @@ const App: React.FC = () => {
   const { status } = useAppSelector((state) => state.todos);
 
   useEffect(() => {
-    if (status === 'initial') dispatch(loadTodos());
+    if (status === 'idle') dispatch(loadTodos());
   }, [dispatch, status]);
 
   useEffect(() => {

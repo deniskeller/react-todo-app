@@ -5,6 +5,7 @@ import TodoItem from '../../components/TodoItem/TodoItem';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
   createTodo,
+  deleteCompletedTodos,
   deleteTodo,
   setCurrentPageReducer,
   updateTodo
@@ -30,7 +31,6 @@ const TodoList: React.FC = () => {
     if (sortType === 'completed') return todo.completed;
     return true;
   });
-
   const pageCount = Math.ceil(filteredTodos.length / itemsPerPage);
   const { pageNumber = '1' } = useParams();
 
@@ -94,15 +94,21 @@ const TodoList: React.FC = () => {
     { label: 'Завершенные', value: 'completed' },
     { label: 'Активные', value: 'active' }
   ];
-
   const [sortByItem, setSortByItem] = useState<SelectItem>(sortByList[0]);
   const handleSortBy = (value: SelectItem) => {
     setSortByItem(value);
     setSortType(value.value as FilterStatus);
     navigate('/page/1');
   };
-
-  // useEffect(() => {}, []);
+  // ---------- УДАЛЕНИЕ ЗАВЕРШЕННЫХ ЗАДАЧ
+  const completedTodosCount = todos.filter((todo) => todo.completed).length;
+  const handleDeleteCompleted = () => {
+    if (
+      window.confirm('Вы уверены, что хотите удалить все выполненные задачи?')
+    ) {
+      dispatch(deleteCompletedTodos());
+    }
+  };
 
   return (
     <div className='max-w-[500px] w-full mx-auto bg-[#ebecf0] rounded-[5px] mt-[50px] p-[30px_13px_13px]'>
@@ -110,6 +116,7 @@ const TodoList: React.FC = () => {
         <div className='text-[20px] leading-[24px] font-semibold pl-[10px]'>
           Задачи
         </div>
+
         <div className='cursor-pointer absolute right-[5px] h-[30px] w-[30px] p-[6px] rounded-[3px] flex justify-center items-center hover:bg-[rgba(9,30,66,0.08)]'>
           <span className='absolute text-[16px]'>&bull;&bull;&bull;</span>
         </div>
@@ -132,26 +139,52 @@ const TodoList: React.FC = () => {
         <div className='flex flex-row items-center relative'>
           <button
             type='submit'
-            className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f]'
+            className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out'
           >
             Добавить
           </button>
 
           <button
-            className='group leading-8 w-[25px]	h-[25px] mr-[15px] relative cursor-pointer'
+            title='Очистить текст задачи'
+            className='group leading-8 w-[25px]	h-[25px] mr-auto relative cursor-pointer'
             onClick={() => setTitle('')}
           >
             <span
               className="block w-full h-[3px] bg-[#6b778c] absolute top-[calc(50%-1px)] rotate-45 before:content-[''] before:block before:w-full before:h-[3px] before:bg-[#6b778c]
-    before:absolute before:rotate-90 group-hover:bg-black group-hover:before:bg-black"
+    before:absolute before:rotate-90 group-hover:bg-black group-hover:before:bg-black transition-all duration-[500ms] ease-in-out before:transition-all before:duration-[500ms]"
             ></span>
           </button>
+
+          {completedTodosCount > 0 && (
+            <button
+              title='Удаление завершенных задач'
+              type='button'
+              className='group w-[30px] h-[30px] flex justify-center items-center ml-auto mr-[10px] rounded-[3px] hover:bg-[rgba(9,30,66,0.08)] transition-all duration-[500ms] ease-in-out'
+              onClick={handleDeleteCompleted}
+            >
+              <svg
+                viewBox='0 0 24 24'
+                fill='none'
+                xmlns='http://www.w3.org/2000/svg'
+                className='w-[24px] h-[24px]'
+              >
+                <path
+                  d='M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20'
+                  stroke='#6b778c'
+                  strokeWidth='2'
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  className='transition-all duration-[500ms] ease-in-out group-hover:stroke-black'
+                />
+              </svg>
+            </button>
+          )}
 
           <BaseSelect
             initialValue={sortByItem}
             options={sortByList}
             onChange={handleSortBy}
-            className='ml-auto'
+            className='ml-[10px]'
           />
         </div>
       </form>

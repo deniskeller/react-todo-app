@@ -53,7 +53,7 @@ const TodoEdit: React.FC = () => {
       </div>
       <div className='flex justify-between items-center'>
         <button
-          className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f]'
+          className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out'
           onClick={handleEditTodo}
         >
           Сохранить

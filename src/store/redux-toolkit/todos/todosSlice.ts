@@ -5,7 +5,7 @@ const API_URL = 'http://localhost:3001/todos';
 
 interface TodosState {
   todos: Todo[];
-  status: 'initial' | 'loading' | 'succeeded' | 'failed';
+  status: 'idle' | 'loading' | 'succeeded' | 'failed';
   error: string | null;
 	currentPage: number;
   itemsPerPage: number;
@@ -14,7 +14,7 @@ interface TodosState {
 // НАЧАЛЬНОЕ СОСТОЯНИЕ
 const initialState: TodosState = {
   todos: [],
-  status: 'initial',
+  status: 'idle',
   error: null,
 	currentPage: 1,
   itemsPerPage: 5,
@@ -27,6 +27,8 @@ const handleFetchError = (response: Response, message: string) => {
   }
   return response.json();
 };
+
+// Вспомогательная функция для обработки ошибок fetch
 
 // ПЕРВИЧНАЯ ЗАГРУЗКА ЗАДАЧ
 export const loadTodos = createAsyncThunk('todos/loadTodos', async (): Promise<Todo[]> => {
@@ -60,6 +62,18 @@ export const deleteTodo = createAsyncThunk(
     return id;
   }
 );
+// УДАЛЕНИЕ ВСЕХ ВЫПОЛНЕННЫХ ЗАДАЧИ
+export const deleteCompletedTodos = createAsyncThunk(
+  'deleteCompletedTodos',
+  async (_, { dispatch, getState }) => {
+    const state = getState() as { todos: TodosState };
+    const completedTodos = state.todos.todos.filter(todo => todo.completed);
+    
+    for (const todo of completedTodos) {
+      await dispatch(deleteTodo(todo.id));
+    }
+  }
+);
 
 // ОБНОВЛЕНИЕ СТАТУСА ЗАДАЧИ
 export const updateTodo = createAsyncThunk(
@@ -82,7 +96,7 @@ const todosSlice = createSlice({
   reducers: {
 		setCurrentPageReducer: (state, action: PayloadAction<number>) => {		
       state.currentPage = action.payload;
-    }
+    },
 	},
   extraReducers: (builder) => {
     builder
@@ -120,6 +134,16 @@ const todosSlice = createSlice({
 					state.currentPage -= 1;
 				}
       })
+			.addCase(deleteCompletedTodos.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(deleteCompletedTodos.fulfilled, (state) => {
+        state.status = 'succeeded';
+      })
+      .addCase(deleteCompletedTodos.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message || 'Ошибка удаления выполненных задач';
+      });
   },
 });
 
