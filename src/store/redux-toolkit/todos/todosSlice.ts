@@ -146,6 +146,9 @@ const todosSlice = createSlice({
 		setCurrentPage: (state, action: PayloadAction<number>) => {		
       state.currentPage = action.payload;
     },
+		setItemsPerPage: (state, action: PayloadAction<number>) => {		
+      state.itemsPerPage = action.payload;
+    },
 	},
   extraReducers: (builder) => {
     builder
@@ -222,5 +225,5 @@ const todosSlice = createSlice({
   },
 });
 
-export const { setCurrentPage } = todosSlice.actions;
+export const { setCurrentPage, setItemsPerPage } = todosSlice.actions;
 export default todosSlice.reducer;

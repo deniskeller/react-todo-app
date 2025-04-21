@@ -9,6 +9,7 @@ import {
   deleteCompletedTodos,
   deleteTodo,
   setCurrentPage,
+  setItemsPerPage,
   updateTodo
 } from 'store/redux-toolkit/todos/todosSlice';
 import { Todo } from 'store/redux-toolkit/todos/types';
@@ -17,6 +18,7 @@ import { BaseSelect } from 'components/base';
 import { SelectItem } from 'constants/globals/types';
 
 type FilterStatus = 'all' | 'completed' | 'active';
+type ItemsPerPage = 5 | 10 | 20;
 
 const TodoList: React.FC = () => {
   const navigate = useNavigate();
@@ -26,6 +28,7 @@ const TodoList: React.FC = () => {
   const { todos, status, error, currentPage, itemsPerPage } = useAppSelector(
     (state) => state.todos
   );
+
   const [sortType, setSortType] = useState<FilterStatus>('all');
   const filteredTodos = todos.filter((todo) => {
     if (sortType === 'active') return !todo.completed;
@@ -117,18 +120,21 @@ const TodoList: React.FC = () => {
       navigate('/page/1');
     }
   };
+  // ---------- ОТРИСОВКА КОЛ-ВА ЗАДАЧ
+  const itemsPerPageList = [
+    { label: '5', value: 5 },
+    { label: '10', value: 10 },
+    { label: '20', value: 20 }
+  ];
+  const handleItemsPerPage = (value: SelectItem) => {
+    dispatch(setItemsPerPage(value.value as ItemsPerPage));
+  };
 
   return (
     <div className='max-w-[500px] w-full mx-auto bg-[#ebecf0] rounded-[5px] mt-[50px] p-[30px_13px_13px]'>
-      <div className='flex flex-row items-center flex-none mb-[15px] relative min-h-[20px]'>
-        <div className='text-[20px] leading-[24px] font-semibold pl-[10px]'>
-          Задачи
-        </div>
-
-        <div className='cursor-pointer absolute right-[5px] h-[30px] w-[30px] p-[6px] rounded-[3px] flex justify-center items-center hover:bg-[rgba(9,30,66,0.08)]'>
-          <span className='absolute text-[16px]'>&bull;&bull;&bull;</span>
-        </div>
-      </div>
+      <h1 className='text-[20px] leading-[24px] font-semibold mb-[15px]'>
+        Задачи
+      </h1>
 
       <form className='mb-[20px]' onSubmit={handleSubmit}>
         <div
@@ -147,7 +153,8 @@ const TodoList: React.FC = () => {
         <div className='flex flex-row items-center relative'>
           <button
             type='submit'
-            className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out'
+            className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none'
+            disabled={title === ''}
           >
             Добавить
           </button>
@@ -163,64 +170,42 @@ const TodoList: React.FC = () => {
             ></span>
           </button>
 
-          {completedTodosCount > 0 && (
-            <button
-              title='Удаление завершенных задач'
-              type='button'
-              className='group w-[30px] h-[30px] flex justify-center items-center ml-auto mr-[10px] rounded-[3px] hover:bg-[rgba(9,30,66,0.08)] transition-all duration-[500ms] ease-in-out'
-              onClick={handleDeleteCompletedTodos}
-            >
-              <svg
-                viewBox='0 0 24 24'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-                className='w-[24px] h-[24px]'
-              >
-                <path
-                  d='M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20'
-                  stroke='#6b778c'
-                  strokeWidth='2'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  className='transition-all duration-[500ms] ease-in-out group-hover:stroke-black'
-                />
-              </svg>
-            </button>
-          )}
-
-          {todos.length > 0 && (
-            <button
-              title='Удаление все задач'
-              type='button'
-              className='group w-[30px] h-[30px] flex justify-center items-center ml-auto mr-[10px] rounded-[3px] hover:bg-[rgba(9,30,66,0.08)] transition-all duration-[500ms] ease-in-out'
-              onClick={handleDeleteAllTodos}
-            >
-              <svg
-                viewBox='0 0 24 24'
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-                className='w-[24px] h-[24px]'
-              >
-                <path
-                  d='M19 7L18.1327 19.1425C18.0579 20.1891 17.187 21 16.1378 21H7.86224C6.81296 21 5.94208 20.1891 5.86732 19.1425L5 7M10 11V17M14 11V17M15 7V4C15 3.44772 14.5523 3 14 3H10C9.44772 3 9 3.44772 9 4V7M4 7H20'
-                  stroke='#6b778c'
-                  strokeWidth='2'
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
-                  className='transition-all duration-[500ms] ease-in-out group-hover:stroke-black'
-                />
-              </svg>
-            </button>
-          )}
-
           <BaseSelect
             initialValue={sortByItem}
             options={sortByList}
             onChange={handleSortBy}
             className='ml-[10px]'
           />
+
+          <BaseSelect
+            initialValue={itemsPerPageList[0]}
+            options={itemsPerPageList}
+            onChange={handleItemsPerPage}
+            className='ml-[10px]'
+          />
         </div>
       </form>
+      <div className='flex justify-between mb-5'>
+        <button
+          title='Удаление завершенных задач'
+          type='button'
+          className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none'
+          onClick={handleDeleteCompletedTodos}
+          disabled={completedTodosCount === 0}
+        >
+          Удалить завершенные задачи
+        </button>
+
+        <button
+          title='Удаление все задач'
+          type='button'
+          className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none'
+          onClick={handleDeleteAllTodos}
+          disabled={todos.length === 0}
+        >
+          Удалить все задачи
+        </button>
+      </div>
 
       {status === 'loading' && <Loader />}
       {status === 'failed' && <div>{error}</div>}
