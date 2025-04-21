@@ -11,6 +11,14 @@ interface TodosState {
   itemsPerPage: number;
 }
 
+interface ApiError {
+  message: string;
+  details?: string;
+  code?: number;
+  timestamp?: string;
+}
+
+
 // НАЧАЛЬНОЕ СОСТОЯНИЕ
 const initialState: TodosState = {
   todos: [],
@@ -36,19 +44,43 @@ const computedPage = (state: TodosState) => {
 		state.currentPage -= 1;
 	}
 }
-
+// Функция для выведения ошибок
+const handleRejectError = (state: TodosState, action: any, message: string) => {
+	if (action.payload) {
+		state.error = action.payload.message;
+	} else {
+		state.error = action.error.message || message;
+	}
+}
 // ПЕРВИЧНАЯ ЗАГРУЗКА ЗАДАЧ
-export const loadTodos = createAsyncThunk('todos/loadTodos', async (_, { rejectWithValue }) => {
+export const loadTodos = createAsyncThunk<
+Todo[],
+void, 
+{
+	rejectValue: ApiError;
+}
+>('todos/loadTodos', async (_, { rejectWithValue }) => {
 	try {
     const response = await fetch(API_URL);
     return await handleFetchError(response, 'Ошибка загрузки задач');
   } catch (error) {
-    return rejectWithValue((error as Error).message);
+    return rejectWithValue({
+			message: 'Ошибка загрузки задач',
+			details: (error as Error).message,
+			timestamp: new Date().toISOString(),
+			code: 500
+		} as ApiError);
   }
 });
 
 // СОЗДАНИЕ НОВОЙ ЗАДАЧИ
-export const createTodo = createAsyncThunk(
+export const createTodo = createAsyncThunk<
+Todo,
+NewTodo, 
+{
+	rejectValue: ApiError;
+}
+>(
   'todos/createTodo',
   async (todo: NewTodo, { rejectWithValue }) => {
 		try {
@@ -61,13 +93,24 @@ export const createTodo = createAsyncThunk(
 			});
 			return handleFetchError(response, 'Ошибка добавления задачи');
 		} catch (error) {
-			return rejectWithValue((error as Error).message);
+			return rejectWithValue({
+				message: 'Ошибка добавления задачи',
+				details: (error as Error).message,
+				timestamp: new Date().toISOString(),
+				code: 500
+			} as ApiError);
 		}
   }
 );
 
 // ОБНОВЛЕНИЕ СТАТУСА ЗАДАЧИ
-export const updateTodo = createAsyncThunk(
+export const updateTodo = createAsyncThunk<
+Todo,
+Todo, 
+{
+	rejectValue: ApiError;
+}
+>(
   'todos/updateTodo',
   async (todo: Todo, { rejectWithValue }) => {
 		try {
@@ -80,13 +123,24 @@ export const updateTodo = createAsyncThunk(
 			});
 			return handleFetchError(response, 'Ошибка редактирования задачи');
 		} catch (error) {
-			return rejectWithValue((error as Error).message);
+			return rejectWithValue({
+				message: 'Ошибка редактирования задачи',
+				details: (error as Error).message,
+				timestamp: new Date().toISOString(),
+				code: 500
+			} as ApiError);
 		}
   }
 );
 
 // УДАЛЕНИЕ ЗАДАЧИ
-export const deleteTodo = createAsyncThunk(
+export const deleteTodo = createAsyncThunk<
+string,
+string, 
+{
+	rejectValue: ApiError;
+}
+>(
   'todos/deleteTodo',
   async (id: string, { rejectWithValue }) => {
 		try {
@@ -96,45 +150,125 @@ export const deleteTodo = createAsyncThunk(
 			await handleFetchError(response, 'Ошибка удаления задачи');
 			return id;
 		} catch (error) {
-			return rejectWithValue((error as Error).message);
+			return rejectWithValue({
+				message: 'Ошибка удаления задачи',
+				details: (error as Error).message,
+				timestamp: new Date().toISOString(),
+				code: 500
+			} as ApiError);
 		}
   }
 );
 // УДАЛЕНИЕ ВСЕХ ВЫПОЛНЕННЫХ ЗАДАЧИ
-export const deleteCompletedTodos = createAsyncThunk(
+export const deleteCompletedTodos = createAsyncThunk<
+string[],
+void,
+{
+	rejectValue: ApiError; // Тип для ошибок
+}
+>(
   'deleteCompletedTodos',
 	async (_, { getState, rejectWithValue }) => {
     try {
       const state = getState() as { todos: TodosState };
       const completedTodos = state.todos.todos.filter(todo => todo.completed);
-      
-      await Promise.all(
-        completedTodos.map(todo => 
+
+			if (completedTodos.length === 0) {
+        return rejectWithValue({
+          message: 'Нет выполненных задач для удаления',
+          code: 404
+        } as ApiError);
+      }
+
+      const deleteResults = await Promise.all(
+        completedTodos.map(todo =>
           fetch(`${API_URL}/${todo.id}`, { method: 'DELETE' })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Ошибка сервера: ${response.status}`);
+              }
+              return { success: true, id: todo.id, error: '' };
+            })
+            .catch(error => ({ 
+              success: false, 
+              id: todo.id, 
+              error: error.message
+            }))
         )
-      );      
+      );
+
+      const failedDeletes = deleteResults.filter(r => !r.success);
+      if (failedDeletes.length > 0) {
+        throw new Error(
+          `Не удалось удалить ${failedDeletes.length} задач: ` +
+          failedDeletes.map(d => `ID ${d.id} (${d.error})`).join(', ')
+        );
+      }		
+
       return completedTodos.map(todo => todo.id); // Возвращаем ID удаленных задач
     } catch (error) {
-      return rejectWithValue((error as Error).message);
+      return rejectWithValue({
+				message: 'Ошибка удаления выполненных задач',
+				details: (error as Error).message,
+				timestamp: new Date().toISOString(),
+				code: 500
+			} as ApiError);
     }
   }
 );
 // УДАЛЕНИЕ ВСЕХ ЗАДАЧИ
-export const deleteAllTodos = createAsyncThunk(
+export const deleteAllTodos = createAsyncThunk<
+void,
+void,
+{
+	rejectValue: ApiError;
+}
+>(
   'todos/deleteAllTodos',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${API_URL}`);
-      const todos: Todo[] = await handleFetchError(response, 'Ошибка удаления задач');
+      const response = await fetch(API_URL);
+      const todos = await handleFetchError(response, 'Ошибка получения списка задач');
 
-      await Promise.all(
-        todos.map(todo => 
+      if (todos.length === 0) {
+        return rejectWithValue({
+          message: 'Список задач уже пуст',
+          code: 404,
+        } as ApiError);
+      }
+			// сохраняем результат всех промисов
+      const deleteResults = await Promise.all(
+        todos.map((todo: Todo) =>
           fetch(`${API_URL}/${todo.id}`, { method: 'DELETE' })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Ошибка сервера: ${response.status}`);
+              }
+              return { success: true, id: todo.id };
+            })
+            .catch(error => ({
+              success: false,
+              id: todo.id,
+              error: error.message
+            }))
         )
-      );      
-      return null;
+      );
+
+      const failedDeletes = deleteResults.filter(r => !r.success); // фильтруем неудаленные задачи
+			// если есть неудаленные задачи, то выкидываем ошибку
+      if (failedDeletes.length > 0) {
+        throw new Error(
+          `Не удалось удалить ${failedDeletes.length} задач: ` +
+          failedDeletes.map(d => `ID ${d.id} (${d.error})`).join(', ')
+        );
+      }
     } catch (error) {
-      return rejectWithValue((error as Error).message);
+      return rejectWithValue({
+				message: 'Ошибка очищения списка задач',
+				details: (error as Error).message,
+				timestamp: new Date().toISOString(),
+				code: 500
+			} as ApiError);
     }
   }
 );
@@ -163,8 +297,13 @@ const todosSlice = createSlice({
 				
       })
       .addCase(loadTodos.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.error.message as string || 'Ошибка загрузки задач';		
+        state.status = 'failed';				
+				// if (action.payload) {
+				// 	state.error = action.payload.message;
+				// } else {
+				// 	state.error = action.error.message || 'Ошибка загрузки задач';
+				// }
+				handleRejectError(state, action, 'Ошибка загрузки задач')
       })
 			// СОЗДАНИЕ НОВОЙ ЗАДАЧИ
 			.addCase(createTodo.pending, (state) => {
@@ -181,19 +320,52 @@ const todosSlice = createSlice({
       })
 			.addCase(createTodo.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload as string || 'Ошибка добавления задачи';
+				// if (action.payload) {
+				// 	state.error = action.payload.message;
+				// } else {
+				// 	state.error = action.error.message || 'Ошибка добавления задачи';
+				// }
+				handleRejectError(state, action, 'Ошибка добавления задачи')
       })
 			// ОБНОВЛЕНИЕ СТАТУСА ЗАДАЧИ
+			.addCase(updateTodo.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
       .addCase(updateTodo.fulfilled, (state, action) => {
+				state.status = 'succeeded';
 				const index = state.todos.findIndex(t => t.id === action.payload.id);
 				if (index !== -1) {
 					state.todos[index] = action.payload;
 				}
       })
+			.addCase(updateTodo.rejected, (state, action) => {
+        state.status = 'failed';
+				handleRejectError(state, action, 'Ошибка обновления задачи')    
+        // if (action.payload) {
+        //   state.error = action.payload.message;
+        // } else {
+        //   state.error = action.error.message || 'Ошибка обновления задачи';
+        // }
+      })
 			// УДАЛЕНИЕ ЗАДАЧИ
+			.addCase(deleteTodo.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
       .addCase(deleteTodo.fulfilled, (state, action) => {
+				state.status = 'succeeded';
         state.todos = state.todos.filter((todo) => todo.id !== action.payload);
 				computedPage(state)
+      })
+			.addCase(deleteTodo.rejected, (state, action) => {
+        state.status = 'failed';
+				handleRejectError(state, action, 'Ошибка удаления задачи')
+        // if (action.payload) {
+        //   state.error = action.payload.message;
+        // } else {
+        //   state.error = action.error.message || 'Ошибка удаления задачи';
+        // }
       })
 			// УДАЛЕНИЕ ВСЕХ ВЫПОЛНЕННЫХ ЗАДАЧИ
 			.addCase(deleteCompletedTodos.pending, (state) => {
@@ -207,7 +379,12 @@ const todosSlice = createSlice({
       })
       .addCase(deleteCompletedTodos.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload as string || 'Ошибка удаления выполненных задач';
+				handleRejectError(state, action, 'Ошибка удаления завершенных задач')
+				// if (action.payload) {
+        //   state.error = action.payload.message;
+        // } else {
+        //   state.error = action.error.message || 'Ошибка удаления завершенных задач';
+        // }
       })
 			// УДАЛЕНИЕ ВСЕХ ЗАДАЧ
 			.addCase(deleteAllTodos.pending, (state) => {
@@ -220,7 +397,12 @@ const todosSlice = createSlice({
       })
       .addCase(deleteAllTodos.rejected, (state, action) => {
         state.status = 'failed';
-        state.error = action.payload as string || 'Ошибка удаления всех задач';
+				handleRejectError(state, action, 'Ошибка очищения списка задач')
+				// if (action.payload) {
+        //   state.error = action.payload.message;
+        // } else {
+        //   state.error = action.error.message || 'Ошибка очищения списка задач';
+        // }
       });
   },
 });
