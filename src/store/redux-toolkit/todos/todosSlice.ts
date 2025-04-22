@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction, SerializedError } from '@reduxjs/toolkit';
+import {  createAsyncThunk, createSlice, PayloadAction, SerializedError } from '@reduxjs/toolkit';
 import { Todo, NewTodo } from './types';
 
 const API_URL = 'http://localhost:3001/todos';
@@ -14,6 +14,7 @@ interface TodosState {
   error: string | null;
 	currentPage: number;
   itemsPerPage: number;
+	draggedTodo: Todo | null;
 }
 
 interface ApiError {
@@ -30,6 +31,7 @@ const initialState: TodosState = {
   error: null,
 	currentPage: 1,
   itemsPerPage: 5,
+	draggedTodo: null,
 };
 
 // Функция для обработки ошибок
@@ -278,6 +280,21 @@ void,
   }
 );
 
+// ОБНОВЛЕНИЕ пОРЯДКА ЗАДАЧИ
+export const updateTodoOrder = createAsyncThunk(
+  'todos/updateTodoOrder',
+  async ({ id, order }: { id: number; order: number }) => {
+    const response = await fetch(`http://localhost:3001/todos/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ order }),
+    });
+    return (await response.json()) as Todo;
+  }
+);
+
 const todosSlice = createSlice({
   name: 'todos',
   initialState,
@@ -287,6 +304,22 @@ const todosSlice = createSlice({
     },
 		setItemsPerPage: (state, action: PayloadAction<number>) => {		
       state.itemsPerPage = action.payload;
+    },
+		setDraggedTodo: (state, action: PayloadAction<Todo | null>) => {
+      state.draggedTodo = action.payload;
+    },
+		reorderTodos: (state, action: PayloadAction<{ dragIndex: number; hoverIndex: number }>) => {
+      const { dragIndex, hoverIndex } = action.payload;
+      const newTodos = [...state.todos];
+      const [removed] = newTodos.splice(dragIndex, 1);
+      newTodos.splice(hoverIndex, 0, removed);
+      
+      // Обновляем порядок
+      newTodos.forEach((todo, index) => {
+        todo.order = index + 1;
+      });
+      
+      state.todos = newTodos;
     },
 	},
   extraReducers: (builder) => {
@@ -378,9 +411,17 @@ const todosSlice = createSlice({
       .addCase(deleteAllTodos.rejected, (state, action) => {
         state.status = 'failed';
 				handleRejectError(state, action, 'Ошибка очищения списка задач')
+      })
+			// ОБНОВЛЕНИЕ пОРЯДКА ЗАДАЧИ
+			.addCase(updateTodoOrder.fulfilled, (state, action) => {
+        const index = state.todos.findIndex((todo) => todo.id === action.payload.id);
+        if (index !== -1) {
+          state.todos[index] = action.payload;
+        }
+        state.todos.sort((a, b) => a.order - b.order);
       });
-  },
+  	},
 });
 
-export const { setCurrentPage, setItemsPerPage } = todosSlice.actions;
+export const { setCurrentPage, setItemsPerPage, reorderTodos, setDraggedTodo } = todosSlice.actions;
 export default todosSlice.reducer;

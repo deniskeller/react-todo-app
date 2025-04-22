@@ -1,6 +1,8 @@
 import React, { memo, useRef, useState } from 'react';
 import { Todo } from '../../store/redux-toolkit/todos/types';
 import useOnClickOutside from '../../hooks/useOnClickOutside';
+import { setDraggedTodo } from 'store/redux-toolkit/todos/todosSlice';
+import { useAppDispatch } from 'hooks/redux';
 
 interface Props {
   todo: Todo;
@@ -8,6 +10,9 @@ interface Props {
   onToggle: (todo: Todo) => void;
   onDelete: (id: string) => void;
   onEdit: (id: string) => void;
+  onDragStart: (index: number) => void;
+  onDragOver: (index: number) => void;
+  onDrop: () => void;
 }
 
 const TodoItem: React.FC<Props> = ({
@@ -15,8 +20,12 @@ const TodoItem: React.FC<Props> = ({
   index,
   onToggle,
   onDelete,
-  onEdit
+  onEdit,
+  onDragStart,
+  onDragOver,
+  onDrop
 }) => {
+  const dispatch = useAppDispatch();
   const [isActive, setIsActive] = useState(false);
   const handleToggleMenu = () => {
     setIsActive(!isActive);
@@ -34,12 +43,38 @@ const TodoItem: React.FC<Props> = ({
     return text;
   };
 
+  // ---------- ПЕРЕТАСКИВАНИЕ ЭЛЕМЕНТОВ
+  const [isDragging, setIsDragging] = useState(false);
+  const handleDragStart = () => {
+    onDragStart(index);
+    setIsDragging(true);
+    dispatch(setDraggedTodo(todo));
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    onDragOver(index);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    onDrop();
+    dispatch(setDraggedTodo(null));
+    setIsDragging(false);
+  };
+
   return (
     <div
       ref={todoRef}
+      draggable
+      onDragStart={handleDragStart}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
       className={`group bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] flex items-center w-full min-h-[50px] py-[3px] pr-[45px] pl-[15px] relative no-underline hover:bg-[rgba(176,203,247,0.2)] ${
         isActive ? '!bg-[rgba(176,203,247,0.2)] active-parent' : ''
-      }`}
+      } 
+			${isDragging ? 'opacity-[0.5]' : 'opacity-[1]'}
+			`}
     >
       <span className={`${todo.completed ? 'line-through' : ''}`}>
         {index + 1}) {computedSizeTitle(todo.title)}

@@ -8,9 +8,11 @@ import {
   deleteAllTodos,
   deleteCompletedTodos,
   deleteTodo,
+  reorderTodos,
   setCurrentPage,
   setItemsPerPage,
-  updateTodo
+  updateTodo,
+  updateTodoOrder
 } from 'store/redux-toolkit/todos/todosSlice';
 import { Todo } from 'store/redux-toolkit/todos/types';
 import Pagination from 'components/Pagination/Pagination';
@@ -48,7 +50,9 @@ const TodoList: React.FC = () => {
     if (title !== '') {
       try {
         setInputError(false);
-        await dispatch(createTodo({ title, completed: false }));
+        await dispatch(
+          createTodo({ title, completed: false, order: Date.now() })
+        );
         setTitle('');
         const pageCount = Math.ceil((todos.length + 1) / itemsPerPage);
         if (pageCount > 1) navigate(`/page/${pageCount}`);
@@ -130,6 +134,40 @@ const TodoList: React.FC = () => {
     dispatch(setItemsPerPage(value.value as ItemsPerPage));
   };
 
+  // ---------- ПЕРЕТАСКИВАНИЕ ЭЛЕМЕНТОВ
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const handleDragStart = (index: number) => {
+    setDragIndex(index);
+  };
+
+  const handleDragOver = (index: number) => {
+    if (dragIndex === null) return;
+    setHoverIndex(index);
+    if (dragIndex !== index) {
+      dispatch(reorderTodos({ dragIndex, hoverIndex: index }));
+      setDragIndex(index);
+    }
+  };
+
+  const handleDrop = async () => {
+    if (dragIndex !== null && hoverIndex !== null && dragIndex !== hoverIndex) {
+      const updatedTodos = [...todos];
+      updatedTodos.forEach((todo, index) => {
+        if (todo.order !== index + 1) {
+          dispatch(updateTodoOrder({ id: +todo.id, order: index + 1 }));
+        }
+      });
+    }
+    setDragIndex(null);
+    setHoverIndex(null);
+  };
+
+  useEffect(() => {
+    console.log('dragIndex: ', dragIndex);
+    console.log('hoverIndex: ', hoverIndex);
+  }, [dragIndex, hoverIndex]);
+
   return (
     <div className='max-w-[500px] w-full mx-auto bg-[#ebecf0] rounded-[5px] mt-[50px] p-[30px_13px_13px]'>
       <h1 className='text-[20px] leading-[24px] font-semibold mb-[15px]'>
@@ -185,6 +223,7 @@ const TodoList: React.FC = () => {
           />
         </div>
       </form>
+
       <div className='flex justify-between mb-5'>
         <button
           title='Удаление завершенных задач'
@@ -221,6 +260,9 @@ const TodoList: React.FC = () => {
                   onToggle={handleToggleTodo}
                   onDelete={handleDeleteTodo}
                   onEdit={handleEditTodo}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
                 />
               ))}
             </div>
