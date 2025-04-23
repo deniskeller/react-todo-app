@@ -289,15 +289,24 @@ Todo,
 }
 >(
   'todos/updateTodoOrder',
-  async ({ id, order }: { id: string; order: number }) => {
-    const response = await fetch(`http://localhost:3001/todos/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ order }),
-    });
-    return (await response.json()) as Todo;
+  async ({ id, order }, { rejectWithValue } ) => {
+		try {
+			const response = await fetch(`http://localhost:3001/todos/${id}`, {
+				method: 'PATCH',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ order }),
+			});
+			return handleFetchError(response, 'Ошибка перемещения задачи');
+		} catch (error) {
+			return rejectWithValue({
+				message: 'Ошибка перемещения задачи',
+				details: (error as Error).message,
+				timestamp: new Date().toISOString(),
+				code: 500
+			} as ApiError);
+		}
   }
 );
 
