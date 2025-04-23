@@ -281,9 +281,15 @@ void,
 );
 
 // ОБНОВЛЕНИЕ пОРЯДКА ЗАДАЧИ
-export const updateTodoOrder = createAsyncThunk(
+export const updateTodoOrder = createAsyncThunk<
+Todo,
+{ id: string; order: number },
+{
+	rejectValue: ApiError;
+}
+>(
   'todos/updateTodoOrder',
-  async ({ id, order }: { id: number; order: number }) => {
+  async ({ id, order }: { id: string; order: number }) => {
     const response = await fetch(`http://localhost:3001/todos/${id}`, {
       method: 'PATCH',
       headers: {

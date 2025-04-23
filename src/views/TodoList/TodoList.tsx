@@ -155,7 +155,7 @@ const TodoList: React.FC = () => {
       const updatedTodos = [...todos];
       updatedTodos.forEach((todo, index) => {
         if (todo.order !== index + 1) {
-          dispatch(updateTodoOrder({ id: +todo.id, order: index + 1 }));
+          dispatch(updateTodoOrder({ id: todo.id, order: index + 1 }));
         }
       });
     }
