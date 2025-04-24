@@ -21,12 +21,6 @@ const App: React.FC = () => {
     if (location.pathname === '/') navigate('/page/1');
   }, [location.pathname, navigate]);
 
-  // useEffect(() => {
-  //   fetch('https://dk-react-todo.vercel.app/api/todos')
-  //     .then((response) => response.json())
-  //     .then((data) => console.log(data));
-  // }, []);
-
   return (
     <Routes>
       <Route path='/' element={<TodoList />} />
