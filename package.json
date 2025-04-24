@@ -27,7 +27,6 @@
     "@reduxjs/toolkit": "^2.6.1",
     "ajv": "^8.17.1",
     "dotenv": "^16.4.7",
-    "firebase": "^10.11.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^9.2.0",
