@@ -1,7 +1,8 @@
 import {  createAsyncThunk, createSlice, PayloadAction, SerializedError } from '@reduxjs/toolkit';
 import { Todo, NewTodo } from './types';
 
-const API_URL = 'http://localhost:3001/todos';
+// const API_URL = 'http://localhost:3001/todos';
+const API_URL = 'https://680a3fd11f1a52874cdfcbb4.mockapi.io/api/todos/todos';
 
 type RejectedAction<T = unknown> = {
   payload?: T;
@@ -70,6 +71,7 @@ void,
 	try {
     const response = await fetch(API_URL);
 		console.log('response: ', response);
+		
     return await handleFetchError(response, 'Ошибка загрузки задач');
   } catch (error) {
     return rejectWithValue({
@@ -123,7 +125,7 @@ Todo,
   async (todo: Todo, { rejectWithValue }) => {
 		try {
 			const response = await fetch(`${API_URL}/${todo.id}`, {
-				method: 'PATCH',
+				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
 				},
@@ -283,31 +285,27 @@ void,
 
 // ОБНОВЛЕНИЕ пОРЯДКА ЗАДАЧИ
 export const updateTodoOrder = createAsyncThunk<
-Todo,
-{ id: string; order: number },
-{
-	rejectValue: ApiError;
-}
+  Todo,
+  { id: string; order: number },
+  { rejectValue: ApiError }
 >(
   'todos/updateTodoOrder',
-  async ({ id, order }, { rejectWithValue } ) => {
-		try {
-			const response = await fetch(`http://localhost:3001/todos/${id}`, {
-				method: 'PATCH',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({ order }),
-			});
-			return handleFetchError(response, 'Ошибка перемещения задачи');
-		} catch (error) {
-			return rejectWithValue({
-				message: 'Ошибка перемещения задачи',
-				details: (error as Error).message,
-				timestamp: new Date().toISOString(),
-				code: 500
-			} as ApiError);
-		}
+  async ({ id, order }, { rejectWithValue }) => {
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order }),
+      });
+      return handleFetchError(response, 'Ошибка перемещения задачи');
+    } catch (error) {
+      return rejectWithValue({
+        message: 'Ошибка перемещения задачи',
+        details: (error as Error).message,
+        timestamp: new Date().toISOString(),
+        code: 500
+      } as ApiError);
+    }
   }
 );
 

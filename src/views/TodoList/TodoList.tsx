@@ -51,7 +51,12 @@ const TodoList: React.FC = () => {
       try {
         setInputError(false);
         await dispatch(
-          createTodo({ title, completed: false, order: Date.now() })
+          createTodo({
+            title,
+            completed: false,
+            order: Date.now(),
+            createdAt: new Date().toISOString()
+          })
         );
         setTitle('');
         const pageCount = Math.ceil((todos.length + 1) / itemsPerPage);
