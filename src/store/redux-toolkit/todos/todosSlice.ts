@@ -1,7 +1,8 @@
 import {  createAsyncThunk, createSlice, PayloadAction, SerializedError } from '@reduxjs/toolkit';
 import { Todo, NewTodo } from './types';
 
-const API_URL = 'http://localhost:3001/todos';
+// const API_URL = 'http://localhost:3001/todos';
+const API_URL = 'https://dk-react-todo-app.vercel.app/api/todos';
 
 type RejectedAction<T = unknown> = {
   payload?: T;
@@ -69,6 +70,7 @@ void,
 >('todos/loadTodos', async (_, { rejectWithValue }) => {
 	try {
     const response = await fetch(API_URL);
+		console.log('response: ', response);
     return await handleFetchError(response, 'Ошибка загрузки задач');
   } catch (error) {
     return rejectWithValue({
