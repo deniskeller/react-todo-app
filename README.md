@@ -24,6 +24,4 @@ React.js и его экосистема + typescript. В качестве store 
 1. Соберите и запустите контейнер: docker-compose up --build
 2. Приложение работает на: http://localhost:3000/page/1
 
-### Деплой
-
-- Новый вариант: https://dk-react-todo-app.vercel.app/
+[Деплой](https://dk-react-todo-app.vercel.app/)
