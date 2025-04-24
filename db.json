@@ -1,28 +1,4 @@
 {
   "todos": [
-    {
-      "id": "96a5",
-      "title": "111",
-      "completed": false,
-      "order": 1745403666334
-    },
-    {
-      "id": "f094",
-      "title": "222",
-      "completed": false,
-      "order": 1745403667261
-    },
-    {
-      "id": "91d9",
-      "title": "333",
-      "completed": false,
-      "order": 1745403668043
-    },
-    {
-      "id": "a70f",
-      "title": "444",
-      "completed": false,
-      "order": 1745403668931
-    }
   ]
 }
