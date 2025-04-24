@@ -26,6 +26,4 @@ React.js и его экосистема + typescript. В качестве store 
 
 ### Деплой
 
-- Вариант деплоя на firebase хостинг(старый вариант приложения без пагинации и типов сортировки): https://react-todo-app-e42cf.web.app/page/1
-
 - Новый вариант: https://dk-react-todo-app.vercel.app/
