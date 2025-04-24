@@ -1,7 +1,7 @@
 import {  createAsyncThunk, createSlice, PayloadAction, SerializedError } from '@reduxjs/toolkit';
 import { Todo, NewTodo } from './types';
 
-// const API_URL = 'http://localhost:3001/api/todos';
+// const API_URL = 'http://localhost:3001/todos';
 const API_URL = 'https://dk-react-todo-app.vercel.app/api/todos';
 
 type RejectedAction<T = unknown> = {

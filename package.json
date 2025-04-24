@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "react-scripts start --open --poll 1000",
-		"server": "node api/index.js",    
+		"server": "node api/index.js",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
