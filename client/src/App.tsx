@@ -22,7 +22,7 @@ const App: React.FC = () => {
   }, [location.pathname, navigate]);
 
   // useEffect(() => {
-  //   fetch('https://dk-react-todo-app.vercel.app/api/todos')
+  //   fetch('https://dk-react-todo.vercel.app/api/todos')
   //     .then((response) => response.json())
   //     .then((data) => console.log(data));
   // }, []);
