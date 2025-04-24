@@ -1,18 +1,17 @@
-import jsonServer from 'json-server';
-import path from 'path';
-import { fileURLToPath } from 'url';
+const express = require('express');
+const app = express();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Временное хранилище в памяти
+let todos = [];
 
-const server = jsonServer.create();
-const router = jsonServer.router(path.join(__dirname, '../db.json'));
-const middlewares = jsonServer.defaults();
-
-server.use(middlewares);
-server.use(router);
-server.listen(process.env.PORT || 5000, () => {
-  console.log('JSON Server is running');
+app.get('/api/todos', (req, res) => {
+  res.json(todos);
 });
 
-export default server;
+app.post('/api/todos', express.json(), (req, res) => {
+  const newTodo = { id: Date.now(), ...req.body };
+  todos.push(newTodo);
+  res.status(201).json(newTodo);
+});
+
+module.exports = app; // Для Vercel
