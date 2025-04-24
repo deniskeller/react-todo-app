@@ -168,11 +168,6 @@ const TodoList: React.FC = () => {
     setHoverIndex(null);
   };
 
-  useEffect(() => {
-    console.log('dragIndex: ', dragIndex);
-    console.log('hoverIndex: ', hoverIndex);
-  }, [dragIndex, hoverIndex]);
-
   return (
     <div className='max-w-[500px] w-full mx-auto bg-[#ebecf0] rounded-[5px] mt-[50px] p-[30px_13px_13px]'>
       <h1 className='text-[20px] leading-[24px] font-semibold mb-[15px]'>

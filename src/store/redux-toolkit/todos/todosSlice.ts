@@ -70,7 +70,6 @@ void,
 >('todos/loadTodos', async (_, { rejectWithValue }) => {
 	try {
     const response = await fetch(API_URL);
-		console.log('response: ', response);
 		
     return await handleFetchError(response, 'Ошибка загрузки задач');
   } catch (error) {
