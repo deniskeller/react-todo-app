@@ -50,11 +50,15 @@ const TodoList: React.FC = () => {
     if (title !== '') {
       try {
         setInputError(false);
+        const order =
+          todos.length > 0 ? Math.max(...todos.map((t) => t.order)) + 1 : 1;
+
         await dispatch(
           createTodo({
             title,
             completed: false,
-            order: Date.now(),
+            // order: Date.now(),
+            order: order,
             createdAt: new Date().toISOString()
           })
         );
@@ -156,17 +160,26 @@ const TodoList: React.FC = () => {
   };
 
   const handleDrop = async () => {
-    if (dragIndex !== null && hoverIndex !== null && dragIndex !== hoverIndex) {
+    // console.log('dragIndex handleDrop: ', dragIndex);
+    // console.log('hoverIndex handleDrop: ', hoverIndex);
+    if (dragIndex !== null && hoverIndex !== null && dragIndex === hoverIndex) {
+      // console.log('kek');
       const updatedTodos = [...todos];
       updatedTodos.forEach((todo, index) => {
-        if (todo.order !== index + 1) {
+        if (todo.order === index + 1) {
           dispatch(updateTodoOrder({ id: todo.id, order: index + 1 }));
         }
       });
     }
+
     setDragIndex(null);
     setHoverIndex(null);
   };
+
+  // useEffect(() => {
+  //   console.log('dragIndex: ', dragIndex);
+  //   console.log('hoverIndex: ', hoverIndex);
+  // }, [dragIndex, hoverIndex]);
 
   return (
     <div className='max-w-[500px] w-full mx-auto bg-[#ebecf0] rounded-[5px] mt-[50px] p-[30px_13px_13px]'>

@@ -323,16 +323,14 @@ const todosSlice = createSlice({
     },
 		reorderTodos: (state, action: PayloadAction<{ dragIndex: number; hoverIndex: number }>) => {
       const { dragIndex, hoverIndex } = action.payload;
-      const newTodos = [...state.todos];
-      const [removed] = newTodos.splice(dragIndex, 1);
-      newTodos.splice(hoverIndex, 0, removed);
-      
-      // Обновляем порядок
+      const newTodos = [...state.todos]; // Создаем копию массива todos
+      const [removed] = newTodos.splice(dragIndex, 1); // Извлекаем перемещаемый элемент
+      newTodos.splice(hoverIndex, 0, removed); // Вставляем его на новую позицию
+      // Обновляем порядок задач
       newTodos.forEach((todo, index) => {
         todo.order = index + 1;
-      });
-      
-      state.todos = newTodos;
+      });      
+      state.todos = newTodos; // Сохраняем обновленный массив
     },
 	},
   extraReducers: (builder) => {
@@ -345,7 +343,7 @@ const todosSlice = createSlice({
       .addCase(loadTodos.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.todos = action.payload;
-				
+				state.todos = action.payload.sort((a, b) => a.order - b.order); // Сортируем по ордеру
       })
       .addCase(loadTodos.rejected, (state, action) => {
         state.status = 'failed';

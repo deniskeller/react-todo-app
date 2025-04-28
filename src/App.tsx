@@ -11,7 +11,7 @@ const App: React.FC = () => {
   let location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { status } = useAppSelector((state) => state.todos);
+  const { status, todos } = useAppSelector((state) => state.todos);
 
   useEffect(() => {
     if (status === 'idle') dispatch(loadTodos());
@@ -20,6 +20,10 @@ const App: React.FC = () => {
   useEffect(() => {
     if (location.pathname === '/') navigate('/page/1');
   }, [location.pathname, navigate]);
+
+  useEffect(() => {
+    console.log('todos: ', todos);
+  }, [todos]);
 
   return (
     <Routes>
