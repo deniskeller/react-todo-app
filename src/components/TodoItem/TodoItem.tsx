@@ -1,5 +1,5 @@
 import React, { memo, useRef, useState } from 'react';
-import { Todo } from '../../store/redux-toolkit/todos/types';
+import type { Todo } from '../../store/redux-toolkit/todos/types';
 import useOnClickOutside from '../../hooks/useOnClickOutside';
 import { setDraggedTodo } from 'store/redux-toolkit/todos/todosSlice';
 import { useAppDispatch } from 'hooks/redux';
@@ -67,14 +67,14 @@ const TodoItem: React.FC<Props> = ({
     <div
       ref={todoRef}
       draggable
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDrop={handleDrop}
       className={`group bg-white rounded-[3px] shadow-[0_1px_0_rgba(9,30,66,0.25)] flex items-center w-full min-h-[50px] py-[3px] pr-[45px] pl-[15px] relative no-underline hover:bg-[rgba(176,203,247,0.2)] ${
         isActive ? '!bg-[rgba(176,203,247,0.2)] active-parent' : ''
-      } 
+      }
 			${isDragging ? 'opacity-[0.5]' : 'opacity-[1]'}
 			`}
+      onDragOver={handleDragOver}
+      onDragStart={handleDragStart}
+      onDrop={handleDrop}
     >
       <span className={`${todo.completed ? 'line-through' : ''}`}>
         {index + 1}) {computedSizeTitle(todo.title)}
@@ -86,9 +86,9 @@ const TodoItem: React.FC<Props> = ({
       >
         <svg
           className='w-[24px] h-[24px] hover:fill-black group-[.active-parent]:fill-black'
-          xmlns='http://www.w3.org/2000/svg'
-          viewBox='0 0 24 24'
           fill='#ccc'
+          viewBox='0 0 24 24'
+          xmlns='http://www.w3.org/2000/svg'
         >
           <path d='M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z' />
           <path d='M0 0h24v24H0z' fill='none' />
@@ -116,11 +116,11 @@ const TodoItem: React.FC<Props> = ({
           Редактировать
         </div>
         <div
+          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer shadow-[1px_2px_10px_rgba(0,0,0,0.35)]'
           onClick={() => {
             onDelete(todo.id);
             setIsActive(false);
           }}
-          className='bg-black/60 rounded-[3px] clear-both text-gray-200 block w-auto float-right mb-1 py-[6px] pr-[12px] pl-[8px] no-underline transition-transform duration-85 ease-in-out hover:bg-black/80 hover:text-white hover:translate-x-[5px] cursor-pointer shadow-[1px_2px_10px_rgba(0,0,0,0.35)]'
         >
           Удалить
         </div>

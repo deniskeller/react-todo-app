@@ -1,25 +1,141 @@
 {
-	"extends": "react-app",
-	"rules": {
-		"react-hooks/rules-of-hooks": 1,
-		"react/no-unknown-property": [
-			"error",
-			{
-				"ignore": [
-					"css"
-				]
-			}
-		],
-		// "react/no-unescaped-entities": 1,
-		"react/display-name": 1,
-		"react/no-unescaped-entities": [
-			"error",
-			{
-				"forbid": [
-					">",
-					"}"
-				]
-			}
-		]
-	}
+  // "extends": "react-app",
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "plugins": ["react", "react-hooks", "@typescript-eslint"],
+  "parser": "@typescript-eslint/parser",
+  "rules": {
+    "react-hooks/rules-of-hooks": 1,
+    "react/no-unknown-property": [
+      "error",
+      {
+        "ignore": ["css"]
+      }
+    ],
+    // "react/no-unescaped-entities": 1,
+    "react/display-name": 1,
+    "react/no-unescaped-entities": [
+      "error",
+      {
+        "forbid": [">", "}"]
+      }
+    ],
+    "react/jsx-sort-props": [
+      "error",
+      {
+        "callbacksLast": true,
+        "shorthandFirst": true,
+        "ignoreCase": true,
+        "reservedFirst": true
+      }
+    ],
+    "react/jsx-no-undef": "error",
+    // "react/jsx-max-props-per-line": ["error", { "maximum": 1 }],
+    "react/self-closing-comp": "error",
+    "react/jsx-pascal-case": "error",
+    "react/sort-comp": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "no-console": "warn",
+    "no-debugger": "warn",
+    "arrow-parens": ["error", "as-needed"],
+    "indent": ["error", 2],
+    "react/jsx-indent": ["error", 2],
+    "react/jsx-indent-props": ["error", 2],
+    "react/jsx-closing-tag-location": "error",
+    // "import/no-unresolved": "error"
+    // "prettier/prettier": "error",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "react/jsx-max-props-per-line": "off",
+    "react/prop-types": "off", // Не нужно для TypeScript
+    "react/react-in-jsx-scope": "off", // Для React 17+
+    "@typescript-eslint/consistent-type-imports": "error", // Четкие типы импортов
+    "no-multiple-empty-lines": [
+      "error",
+      {
+        "max": 1, // Максимум 1 пустая строка подряд
+        "maxEOF": 0, // Запретить пустые строки в конце файла
+        "maxBOF": 0 // Запретить пустые строки в начале файла
+      }
+    ]
+
+    // "import/order": [
+    //   "error",
+    //   {
+    //     // Сортировка импортов
+    //     "groups": [
+    //       "builtin",
+    //       "external",
+    //       "internal",
+    //       "parent",
+    //       "sibling",
+    //       "index"
+    //     ],
+    //     "newlines-between": "always"
+    //   }
+    // ]
+  },
+  // "rules": {
+  //   // React
+  //   "react-hooks/rules-of-hooks": "error",
+  //   "react-hooks/exhaustive-deps": "warn",
+  //   "react/no-unknown-property": ["error", { "ignore": ["css"] }],
+  //   "react/display-name": "warn",
+  //   "react/no-unescaped-entities": ["error", { "forbid": [">", "}"] }],
+  //   "react/jsx-sort-props": [
+  //     "error",
+  //     {
+  //       "callbacksLast": true,
+  //       "shorthandFirst": true,
+  //       "ignoreCase": true,
+  //       "reservedFirst": true
+  //     }
+  //   ],
+  //   "react/jsx-no-undef": "error",
+  //   "react/jsx-max-props-per-line": "off",
+  //   "react/self-closing-comp": "error",
+  //   "react/jsx-pascal-case": "error",
+  //   "react/sort-comp": "error",
+  //   "react/prop-types": "off",
+  //   "react/react-in-jsx-scope": "off",
+
+  //   // TypeScript
+  //   "@typescript-eslint/explicit-function-return-type": "off",
+  //   "@typescript-eslint/no-explicit-any": "warn",
+  //   "@typescript-eslint/consistent-type-imports": "error",
+
+  //   // Общие
+  //   "no-console": "error",
+  //   "no-debugger": "error",
+  //   "arrow-parens": ["error", "as-needed"],
+  //   "indent": ["error", 2],
+  //   "react/jsx-indent": ["error", 2],
+  //   "react/jsx-indent-props": ["error", 2],
+  //   "react/jsx-closing-tag-location": "error"
+
+  //   // Импорты
+  //   // "import/order": [
+  //   //   "error",
+  //   //   {
+  //   //     "groups": [
+  //   //       "builtin",
+  //   //       "external",
+  //   //       "internal",
+  //   //       "parent",
+  //   //       "sibling",
+  //   //       "index"
+  //   //     ],
+  //   //     "newlines-between": "always"
+  //   //   }
+  //   // ]
+  // },
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 }

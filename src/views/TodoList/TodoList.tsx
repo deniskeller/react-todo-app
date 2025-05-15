@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import Loader from 'components/Loader/Loader';
-import TodoItem from 'components/TodoItem/TodoItem';
 import { useAppDispatch, useAppSelector } from 'hooks/redux';
+import TodoItem from 'components/TodoItem/TodoItem';
 import {
   createTodo,
   deleteAllTodos,
@@ -14,10 +14,10 @@ import {
   updateTodo,
   updateTodoOrder
 } from 'store/redux-toolkit/todos/todosSlice';
-import { Todo } from 'store/redux-toolkit/todos/types';
+import type { Todo } from 'store/redux-toolkit/todos/types';
 import Pagination from 'components/Pagination/Pagination';
 import { BaseSelect } from 'components/base';
-import { SelectItem } from 'constants/globals/types';
+import type { SelectItem } from 'constants/globals/types';
 
 type FilterStatus = 'all' | 'completed' | 'active';
 type ItemsPerPage = 5 | 10 | 20;
@@ -28,11 +28,11 @@ const TodoList: React.FC = () => {
   const [title, setTitle] = useState<string>('');
   const [inputError, setInputError] = useState<boolean>(false);
   const { todos, status, error, currentPage, itemsPerPage } = useAppSelector(
-    (state) => state.todos
+    state => state.todos
   );
 
   const [sortType, setSortType] = useState<FilterStatus>('all');
-  const filteredTodos = todos.filter((todo) => {
+  const filteredTodos = todos.filter(todo => {
     if (sortType === 'active') return !todo.completed;
     if (sortType === 'completed') return todo.completed;
     return true;
@@ -51,7 +51,7 @@ const TodoList: React.FC = () => {
       try {
         setInputError(false);
         const order =
-          todos.length > 0 ? Math.max(...todos.map((t) => t.order)) + 1 : 1;
+          todos.length > 0 ? Math.max(...todos.map(t => t.order)) + 1 : 1;
 
         await dispatch(
           createTodo({
@@ -65,8 +65,9 @@ const TodoList: React.FC = () => {
         setTitle('');
         const pageCount = Math.ceil((todos.length + 1) / itemsPerPage);
         if (pageCount > 1) navigate(`/page/${pageCount}`);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.log('error: ', error);
+        // console.log('error111: ', error);
       }
     } else {
       setInputError(true);
@@ -118,7 +119,7 @@ const TodoList: React.FC = () => {
     navigate('/page/1');
   };
   // ---------- УДАЛЕНИЕ ЗАВЕРШЕННЫХ ЗАДАЧ
-  const completedTodosCount = todos.filter((todo) => todo.completed).length;
+  const completedTodosCount = todos.filter(todo => todo.completed).length;
   const handleDeleteCompletedTodos = () => {
     if (
       window.confirm('Вы уверены, что хотите удалить все выполненные задачи?')
@@ -194,66 +195,66 @@ const TodoList: React.FC = () => {
           }`}
         >
           <textarea
-            placeholder='Введите текст задачи...'
             className='block text-base leading-5	text-[#172b4d]	bg-white	w-full	h-auto max-h-[162px] min-h-[70px]	overflow-y-auto	p-0	border-none	shadow-none	overflow-hidden break-words	resize-none outline-none'
+            placeholder='Введите текст задачи...'
             value={title}
-            onChange={(event) => setTitle(event.target.value)}
+            onChange={event => setTitle(event.target.value)}
           />
         </div>
 
         <div className='flex flex-row items-center relative'>
           <button
-            type='submit'
             className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 mr-[15px] px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none'
             disabled={title === ''}
+            type='submit'
           >
             Добавить
           </button>
 
           <button
-            title='Очистить текст задачи'
             className='group leading-8 w-[25px]	h-[25px] mr-auto relative cursor-pointer'
+            title='Очистить текст задачи'
             onClick={() => setTitle('')}
           >
             <span
               className="block w-full h-[3px] bg-[#6b778c] absolute top-[calc(50%-1px)] rotate-45 before:content-[''] before:block before:w-full before:h-[3px] before:bg-[#6b778c]
     before:absolute before:rotate-90 group-hover:bg-black group-hover:before:bg-black transition-all duration-[500ms] ease-in-out before:transition-all before:duration-[500ms]"
-            ></span>
+            />
           </button>
 
           <BaseSelect
+            className='ml-[10px]'
             initialValue={sortByItem}
             options={sortByList}
             onChange={handleSortBy}
-            className='ml-[10px]'
           />
 
           <BaseSelect
+            className='ml-[10px]'
             initialValue={itemsPerPageList[0]}
             options={itemsPerPageList}
             onChange={handleItemsPerPage}
-            className='ml-[10px]'
           />
         </div>
       </form>
 
       <div className='flex justify-between mb-5'>
         <button
+          className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none'
+          disabled={completedTodosCount === 0}
           title='Удаление завершенных задач'
           type='button'
-          className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none'
           onClick={handleDeleteCompletedTodos}
-          disabled={completedTodosCount === 0}
         >
           Удалить завершенные задачи
         </button>
 
         <button
+          className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none'
+          disabled={todos.length === 0}
           title='Удаление все задач'
           type='button'
-          className='bg-[#5aac44] shadow-none border-none text-white cursor-pointer inline-block font-semibold leading-5 px-[15px] py-[12px] text-center rounded-[3px] outline-none hover:bg-[#61bd4f] transition-all duration-[500ms] ease-in-out disabled:opacity-50 disabled:pointer-events-none'
           onClick={handleDeleteAllTodos}
-          disabled={todos.length === 0}
         >
           Удалить все задачи
         </button>
@@ -268,14 +269,14 @@ const TodoList: React.FC = () => {
               {paginatedTodos.map((todo, index) => (
                 <TodoItem
                   key={todo.id}
-                  todo={todo}
                   index={(currentPage - 1) * itemsPerPage + index}
-                  onToggle={handleToggleTodo}
+                  todo={todo}
                   onDelete={handleDeleteTodo}
-                  onEdit={handleEditTodo}
-                  onDragStart={handleDragStart}
                   onDragOver={handleDragOver}
+                  onDragStart={handleDragStart}
                   onDrop={handleDrop}
+                  onEdit={handleEditTodo}
+                  onToggle={handleToggleTodo}
                 />
               ))}
             </div>
@@ -288,8 +289,8 @@ const TodoList: React.FC = () => {
       {pageCount > 1 && (
         <Pagination
           currentPage={currentPage}
-          totalItems={filteredTodos.length}
           itemsPerPage={itemsPerPage}
+          totalItems={filteredTodos.length}
           onPageChange={handlePageChange}
         />
       )}

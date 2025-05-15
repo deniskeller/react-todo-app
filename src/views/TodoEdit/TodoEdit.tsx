@@ -9,7 +9,7 @@ const TodoEdit: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
-  const { todos } = useAppSelector((state) => state.todos);
+  const { todos } = useAppSelector(state => state.todos);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTodoTitle(e.target.value);
@@ -19,7 +19,7 @@ const TodoEdit: React.FC = () => {
   const handleEditTodo = () => {
     if (todoTitle !== '') {
       const currentTodoId = location.pathname.split('/')[2];
-      const currentTodo = todos.find((t) => t.id === currentTodoId);
+      const currentTodo = todos.find(t => t.id === currentTodoId);
       if (currentTodo) {
         dispatch(updateTodo({ ...currentTodo, title: todoTitle }));
       }
@@ -31,7 +31,7 @@ const TodoEdit: React.FC = () => {
 
   useEffect(() => {
     const currentTodoId = location.pathname.split('/')[2];
-    const currentTodo = todos.find((t) => t.id === currentTodoId);
+    const currentTodo = todos.find(t => t.id === currentTodoId);
     if (currentTodo) {
       setTodoTitle(currentTodo.title);
     }

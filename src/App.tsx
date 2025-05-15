@@ -8,10 +8,10 @@ import { useAppDispatch, useAppSelector } from './hooks/redux';
 import { loadTodos } from './store/redux-toolkit/todos/todosSlice';
 
 const App: React.FC = () => {
-  let location = useLocation();
+  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { status, todos } = useAppSelector((state) => state.todos);
+  const { status, todos } = useAppSelector(state => state.todos);
 
   useEffect(() => {
     if (status === 'idle') dispatch(loadTodos());
@@ -22,15 +22,15 @@ const App: React.FC = () => {
   }, [location.pathname, navigate]);
 
   useEffect(() => {
-    console.log('todos: ', todos);
+    // console.log('todos: ', todos);
   }, [todos]);
 
   return (
     <Routes>
-      <Route path='/' element={<TodoList />} />
-      <Route path='/page/:pageNumber' element={<TodoList />} />
-      <Route path='/TodoEdit/:id' element={<TodoEdit />} />
-      <Route path='*' element={<Navigate to='/page/1' replace />} />
+      <Route element={<TodoList />} path='/' />
+      <Route element={<TodoList />} path='/page/:pageNumber' />
+      <Route element={<TodoEdit />} path='/TodoEdit/:id' />
+      <Route element={<Navigate replace to='/page/1' />} path='*' />
     </Routes>
   );
 };
